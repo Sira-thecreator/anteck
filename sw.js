@@ -1,0 +1,13 @@
+/* Anteck: keeps the app's own files on the device so that it starts without a network. The notes themselves live in IndexedDB, not here. */
+const V = 'anteck-2a15e5484c';
+const SHELL = ["./", "index.html", "manifest.webmanifest", "fonts/archivo-latin-ext-wdth-normal.woff2", "fonts/archivo-latin-wdth-normal.woff2", "fonts/caveat-latin-ext-wght-normal.woff2", "fonts/caveat-latin-wght-normal.woff2", "fonts/courier-prime-latin-400-italic.woff2", "fonts/courier-prime-latin-400-normal.woff2", "fonts/courier-prime-latin-700-italic.woff2", "fonts/courier-prime-latin-700-normal.woff2", "fonts/courier-prime-latin-ext-400-italic.woff2", "fonts/courier-prime-latin-ext-400-normal.woff2", "fonts/courier-prime-latin-ext-700-italic.woff2", "fonts/courier-prime-latin-ext-700-normal.woff2", "fonts/figtree-latin-ext-wght-italic.woff2", "fonts/figtree-latin-ext-wght-normal.woff2", "fonts/figtree-latin-wght-italic.woff2", "fonts/figtree-latin-wght-normal.woff2", "fonts/jetbrains-mono-latin-ext-wght-italic.woff2", "fonts/jetbrains-mono-latin-ext-wght-normal.woff2", "fonts/jetbrains-mono-latin-wght-italic.woff2", "fonts/jetbrains-mono-latin-wght-normal.woff2", "fonts/newsreader-latin-ext-opsz-italic.woff2", "fonts/newsreader-latin-ext-opsz-normal.woff2", "fonts/newsreader-latin-opsz-italic.woff2", "fonts/newsreader-latin-opsz-normal.woff2", "fonts/nunito-latin-ext-wght-italic.woff2", "fonts/nunito-latin-ext-wght-normal.woff2", "fonts/nunito-latin-wght-italic.woff2", "fonts/nunito-latin-wght-normal.woff2", "icons/apple-touch-icon.png", "icons/icon-192.png", "icons/icon-512.png", "icons/icon-maskable-512.png", "lib/html2canvas.min.js", "lib/jspdf.umd.min.js"];
+self.addEventListener('install', e => e.waitUntil(caches.open(V).then(c => c.addAll(SHELL)).then(() => self.skipWaiting())));
+self.addEventListener('activate', e => e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k.startsWith('anteck-') && k !== V).map(k => caches.delete(k)))).then(() => self.clients.claim())));
+self.addEventListener('fetch', e => {
+  const r = e.request; if (r.method !== 'GET' || new URL(r.url).origin !== location.origin) return;
+  if (r.mode === 'navigate') {   // the page: fresh from the net when there is one, so a new version shows at once; otherwise the kept copy
+    e.respondWith(fetch(r).then(res => { if (res.ok) { const copy = res.clone(); caches.open(V).then(c => c.put('index.html', copy)); } return res; }).catch(() => caches.match('index.html', { cacheName: V }).then(hit => hit || caches.match('./'))));
+    return;
+  }
+  e.respondWith(caches.match(r).then(hit => hit || fetch(r).then(res => { if (res.ok) { const copy = res.clone(); caches.open(V).then(c => c.put(r, copy)); } return res; })));
+});
