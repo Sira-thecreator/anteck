@@ -210,7 +210,8 @@ svg{flex:none;display:block}
 .list-empty strong{font-family:var(--f-display);font-stretch:80%;font-size:17px;color:var(--ink)}
 
 /* ---------- editor ---------- */
-.edit{min-width:0;min-height:0;display:flex;flex-direction:column}
+.edit{position:relative;min-width:0;min-height:0;display:flex;flex-direction:column}
+.list-fold{display:none}
 .editor{display:flex;flex-direction:column;min-height:0;flex:1}
 .bars{background:var(--panel);border-bottom:1px solid var(--line)}
 .bar{display:flex;align-items:center;gap:6px;padding:8px 16px}
@@ -415,7 +416,6 @@ body.mark-moving,body.mark-moving *{cursor:grabbing!important}
 .body{position:relative;display:flex;flex-direction:column;outline:0}
 .body img{cursor:pointer;min-height:24px;background:var(--line-soft)}
 .body img.picked{outline:2px solid var(--accent);outline-offset:3px}
-.body.is-empty::before{content:attr(data-ph);position:absolute;left:0;top:0;color:var(--ink-3);pointer-events:none}
 .img-tools{position:absolute;z-index:5;display:flex;align-items:center;gap:2px;background:var(--ink);color:var(--paper);border-radius:8px;padding:4px;box-shadow:0 6px 18px -6px var(--shadow);max-width:calc(100% - 16px);flex-wrap:wrap}
 .img-tools button{height:30px;padding:0 9px;border-radius:5px;font-size:13px;font-weight:600;display:inline-flex;align-items:center;gap:6px}
 .img-tools button:hover{background:var(--ink-2)}
@@ -521,6 +521,99 @@ body.mark-moving,body.mark-moving *{cursor:grabbing!important}
 .ln.drag .ln-hit{cursor:grabbing}
 .ln-h{position:absolute;width:13px;height:13px;margin:-6.5px 0 0 -6.5px;border-radius:50%;background:var(--paper);border:2px solid var(--accent);cursor:crosshair;touch-action:none;opacity:0;transition:opacity .12s}
 .ln-h.ln-m{width:11px;height:11px;margin:-5.5px 0 0 -5.5px;border-radius:2px;border-color:var(--ink-2);transform:rotate(45deg);cursor:move}
+/* Sketch: grey wireframe pieces that lie free on the sheet. Drawn with plain boxes and borders, so they also come out in the PDF */
+.wf{position:absolute;box-sizing:border-box;pointer-events:auto;outline:0;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;color:var(--ink-2);font-family:var(--f-ui);font-size:14px;line-height:1.2;--wl:var(--ink-2);--wm:var(--line);--wf:var(--line-soft)}
+.wf:focus,.wf:focus-within{box-shadow:0 0 0 1.5px var(--paper),0 0 0 3px var(--accent)}
+.wf.drag{cursor:grabbing}
+.wf[data-t="rect"],.wf[data-t="round"],.wf[data-t="circle"]{border:1.5px solid var(--wl)}
+.wf[data-t="round"]{border-radius:14px}.wf[data-t="circle"]{border-radius:50%}
+.wf[data-f="1"]{background:var(--wf)}.wf[data-f="2"]{background:var(--wm)}
+.wf[data-t="btn"]{display:flex;align-items:center;justify-content:center;padding:0 10px;border-radius:8px;background:var(--wl);color:var(--paper);font-weight:650}
+.wf[data-t="input"]{display:flex;align-items:center;padding:0 12px;border:1.5px solid var(--wl);border-radius:6px;color:var(--ink-3);background:var(--paper)}
+.wf[data-t="img"]{border:1.5px solid var(--wl);background:var(--wf);overflow:hidden}
+.wf-x{position:absolute;left:50%;top:50%;height:0;border-top:1.5px solid var(--wl);pointer-events:none}
+.wf[data-t="head"]{display:flex;align-items:center;font-size:22px;font-weight:750;color:var(--ink)}
+.wf[data-t="text"]{display:flex;flex-direction:column;justify-content:space-between;padding:6px 0}
+.wf-bar{display:block;flex:none;height:8px;border-radius:4px;background:var(--wm);width:100%}
+.wf[data-t="check"]{display:flex;align-items:center;gap:10px;color:var(--ink)}
+.wf-box{flex:none;width:18px;height:18px;border:1.5px solid var(--wl);border-radius:4px;box-sizing:border-box}
+.wf[data-t="nav"]{display:flex;align-items:center;gap:12px;padding:0 14px;border:1.5px solid var(--wl);background:var(--wf);color:var(--ink);font-weight:650}
+.wf[data-t="nav"] .wf-label{flex:1;text-align:center}
+.wf-burger{flex:none;display:flex;flex-direction:column;gap:4px;width:20px}.wf-burger i{display:block;height:2px;background:var(--wl)}
+.wf-dot{flex:none;width:22px;height:22px;border-radius:50%;border:1.5px solid var(--wl);box-sizing:border-box}
+.wf[data-t="card"]{border:1.5px solid var(--wl);border-radius:10px;overflow:hidden;background:var(--paper);display:flex;flex-direction:column}
+.wf[data-t="card"]:focus,.wf[data-t="card"]:focus-within,.wf[data-t="img"]:focus,.wf[data-t="img"]:focus-within{overflow:visible}
+.wf-pic{position:relative;display:block;flex:none;background:var(--wf);border-bottom:1.5px solid var(--wl);overflow:hidden}
+.wf-lines{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center;gap:10px;padding:8px 14px}
+.wf[data-t="phone"],.wf[data-t="desk"]{pointer-events:none}   /* a frame is held by its edge, so what lies inside it can still be reached */
+.wf[data-t="phone"]{border:3px solid var(--wl);border-radius:38px}
+.wf-notch{position:absolute;left:50%;top:10px;width:84px;height:18px;margin-left:-42px;border-radius:9px;background:var(--wl)}
+.wf-home{position:absolute;left:50%;bottom:9px;width:110px;height:4px;margin-left:-55px;border-radius:2px;background:var(--wl)}
+.wf[data-t="desk"]{border:2px solid var(--wl);border-radius:10px}
+.wf-chrome{position:absolute;left:0;right:0;top:0;height:30px;border-bottom:2px solid var(--wl);display:flex;align-items:center;gap:6px;padding:0 10px;box-sizing:border-box}
+.wf-chrome>i{flex:none;width:9px;height:9px;border-radius:50%;border:1.5px solid var(--wl);box-sizing:border-box}
+.wf-chrome>.wf-url{flex:1;height:14px;border-radius:7px;margin-left:8px}
+.wf-edge{position:absolute;pointer-events:auto;cursor:grab}
+.wf-edge[data-e="t"]{left:0;right:0;top:-7px;height:18px}.wf-edge[data-e="b"]{left:0;right:0;bottom:-7px;height:18px}.wf-edge[data-e="l"]{top:0;bottom:0;left:-7px;width:18px}.wf-edge[data-e="r"]{top:0;bottom:0;right:-7px;width:18px}
+.wf[data-t="desk"] .wf-edge[data-e="t"]{height:34px}
+.wf-label{min-width:8px;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;outline:0}
+.wf[data-t="select"]{display:flex;align-items:center;gap:8px;padding:0 12px;border:1.5px solid var(--wl);border-radius:6px;color:var(--ink);background:var(--paper)}
+.wf[data-t="select"] .wf-label{flex:1}
+.wf-chev{flex:none;width:8px;height:8px;border-right:1.5px solid var(--wl);border-bottom:1.5px solid var(--wl);box-sizing:border-box;transform:rotate(45deg);margin:-4px 3px 0}
+.wf-chev.r{transform:rotate(-45deg);margin:0 4px 0 0}
+.wf[data-t="radio"],.wf[data-t="toggle"]{display:flex;align-items:center;gap:10px;color:var(--ink)}
+.wf-radio{flex:none;width:18px;height:18px;border:1.5px solid var(--wl);border-radius:50%;box-sizing:border-box;display:grid;place-items:center}
+.wf-radio i{width:8px;height:8px;border-radius:50%;background:var(--wl)}
+.wf-switch{flex:none;width:36px;height:20px;border-radius:10px;background:var(--wl);position:relative}
+.wf-switch i{position:absolute;right:3px;top:3px;width:14px;height:14px;border-radius:50%;background:var(--paper)}
+.wf[data-t="icon"]{border:1.5px solid var(--wl);border-radius:6px;overflow:hidden}
+.wf[data-t="avatar"]{border:1.5px solid var(--wl);border-radius:50%;background:var(--wf);overflow:hidden}
+.wf-head{position:absolute;left:50%;top:22%;width:34%;height:34%;margin-left:-17%;border-radius:50%;background:var(--wl)}
+.wf-body{position:absolute;left:50%;top:64%;width:70%;height:70%;margin-left:-35%;border-radius:50%;background:var(--wl)}
+.wf[data-t="tabs"]{display:flex;align-items:stretch;border-bottom:1.5px solid var(--wm);color:var(--ink-3);font-weight:600}
+.wf-tab{flex:1;min-width:0;display:flex;align-items:center;justify-content:center;padding:0 6px;white-space:nowrap;overflow:hidden;box-sizing:border-box;border-bottom:3px solid transparent;margin-bottom:-1.5px}
+.wf-tab.on{color:var(--ink);border-bottom-color:var(--wl)}
+.wf[data-t="bottom"]{display:flex;align-items:stretch;border-top:1.5px solid var(--wl);background:var(--paper);color:var(--ink-2);font-size:11px;font-weight:600}
+.wf-bn{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;white-space:nowrap;overflow:hidden}
+.wf-bn .wf-dot{width:18px;height:18px}
+.wf-bn.on{color:var(--ink)}.wf-bn.on .wf-dot{background:var(--wl)}
+.wf[data-t="row"]{display:flex;align-items:center;gap:12px;padding:0 8px;border-bottom:1.5px solid var(--wm);color:var(--ink);font-weight:650}
+.wf[data-t="row"] .wf-dot{width:40px;height:40px;background:var(--wf)}
+.wf-rowtx{flex:1;min-width:0;display:flex;flex-direction:column;gap:7px}
+.wf-rowtx .wf-bar{width:70%}
+.wf[data-t="dialog"]{display:flex;flex-direction:column;gap:10px;padding:18px 18px 14px;border:1.5px solid var(--wl);border-radius:12px;background:var(--paper);color:var(--ink);font-weight:700;font-size:16px;overflow:hidden}
+.wf-dlg-tx{flex:1;min-height:0;display:flex;flex-direction:column;gap:9px;overflow:hidden}
+.wf-dlg-btns{flex:none;display:flex;justify-content:flex-end;gap:8px}
+.wf-dlg-btns i{width:72px;height:30px;border-radius:7px;border:1.5px solid var(--wl);box-sizing:border-box}
+.wf-dlg-btns i+i{background:var(--wl)}
+.wf[data-t="mark"]{display:flex;align-items:center;justify-content:center;border-radius:50%;background:var(--ink);color:var(--paper);font-weight:750;font-size:13px}
+.wf-edit{position:absolute;left:50%;top:50%;z-index:7;transform:translate(-50%,-50%);min-width:56px;max-width:300px;padding:4px 9px;border-radius:5px;background:var(--paper);color:var(--ink);box-shadow:0 0 0 2px var(--accent),0 6px 14px -6px var(--shadow);font:500 14px/1.3 var(--f-ui);white-space:nowrap;text-align:center;outline:0;cursor:text;user-select:text;-webkit-user-select:text;pointer-events:auto}
+.wf.sel{box-shadow:0 0 0 1.5px var(--paper),0 0 0 3px var(--accent)}
+.stickies.multi .wf-tools,.stickies.multi .wf-rz{display:none}
+.wf-gbar{position:absolute;z-index:6;display:flex;align-items:center;gap:3px;white-space:nowrap;font-family:var(--f-ui)}
+.wf-gbar[hidden]{display:none}
+.wf-gbar span{font-size:12px;font-weight:650;color:var(--ink-2);padding:0 6px 0 2px}
+.wf-gbar button{min-width:28px;height:24px;padding:0 7px;border-radius:5px;font-size:12px;font-weight:700;line-height:1;display:inline-flex;align-items:center;background:var(--paper);color:var(--ink);border:1px solid var(--line);box-shadow:0 2px 6px -3px var(--shadow)}
+.wf-gbar button:hover{background:var(--line-soft);color:var(--accent)}
+.wf-guide{position:absolute;z-index:6;background:var(--c-red);pointer-events:none}
+.wf-catch{position:absolute;left:0;right:0;z-index:7;cursor:crosshair;touch-action:none;outline:2px dashed var(--accent);outline-offset:-6px}
+.wf-catch i{position:absolute;display:none;border:1.5px dashed var(--accent);background:var(--accent-soft);opacity:.55}
+.wf-gbox{position:absolute;z-index:6;pointer-events:none;box-shadow:0 0 0 1px var(--accent)}
+.wf-gbox[hidden]{display:none}
+.wf-gbox .wf-rz{opacity:1;pointer-events:auto}
+.wf[data-lock]{cursor:default}
+.wf[data-lock]:focus,.wf[data-lock]:focus-within{box-shadow:0 0 0 1.5px var(--paper),0 0 0 3px var(--ink-3)}
+.wf.hot{box-shadow:0 0 0 3px var(--c-blue)}
+.wf-rz{position:absolute;right:-8px;bottom:-8px;z-index:6;width:15px;height:15px;border-radius:3px;background:var(--paper);border:2px solid var(--accent);box-sizing:border-box;cursor:nwse-resize;opacity:0;pointer-events:none;touch-action:none}
+.wf-rz[data-h="nw"]{left:-8px;top:-8px;right:auto;bottom:auto}.wf-rz[data-h="ne"]{top:-8px;bottom:auto;cursor:nesw-resize}.wf-rz[data-h="sw"]{left:-8px;right:auto;cursor:nesw-resize}
+.wf-tools{position:absolute;left:0;top:calc(100% + 9px);z-index:6;display:flex;gap:3px;white-space:nowrap;opacity:0;pointer-events:none;font-weight:400}
+.wf:focus .wf-rz,.wf:focus-within .wf-rz,.wf.drag .wf-rz{opacity:1;pointer-events:auto}
+.wf:focus .wf-tools,.wf:focus-within .wf-tools{opacity:1;pointer-events:auto}
+.wf.drag .wf-tools{opacity:0}
+.wf-tools button{min-width:28px;height:24px;padding:0 7px;border-radius:5px;font-family:var(--f-ui);font-size:12px;font-weight:700;line-height:1;display:inline-flex;align-items:center;background:var(--paper);color:var(--ink);border:1px solid var(--line);box-shadow:0 2px 6px -3px var(--shadow)}
+.wf-tools button:hover{background:var(--line-soft);color:var(--accent)}
+.pr-win .wf,.static .wf{pointer-events:none}
+.menu-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px}
 .ln-tools{position:absolute;z-index:4;display:flex;gap:3px;white-space:nowrap;transform:translateX(-50%);opacity:0;pointer-events:none;transition:opacity .12s}
 .ln:hover .ln-h,.ln:focus .ln-h,.ln:focus-within .ln-h,.ln.drag .ln-h{opacity:1}
 .ln:focus .ln-tools,.ln:focus-within .ln-tools{opacity:1;pointer-events:auto}
@@ -726,6 +819,21 @@ body.mark-moving,body.mark-moving *{cursor:grabbing!important}
   .app.side-collapsed .side{visibility:hidden;overflow:hidden;padding-inline:0}
   .app.side-collapsed .only-narrow{display:grid}
 }
+/* ---------- the list of notes folds away, so the sheet gets the room (not on a phone, where list and sheet take turns) ---------- */
+@media (min-width:760px){
+  .list-fold{position:absolute;left:0;top:50%;z-index:8;display:grid;place-items:center;width:18px;height:56px;transform:translate(-50%,-50%);border-radius:9px;background:var(--paper);border:1px solid var(--line);color:var(--ink-2);box-shadow:0 1px 3px var(--shadow)}
+  .list-fold[hidden]{display:none}
+  .list-fold:hover{color:var(--ink);border-color:var(--ink-3)}
+  .app.list-collapsed .list-fold{transform:translate(0,-50%);border-radius:0 9px 9px 0;border-left:0}
+  .app.list-collapsed .list{visibility:hidden;overflow:hidden;border-right:0}
+}
+@media (min-width:1100px){
+  .app.list-collapsed{grid-template-columns:var(--side-w) 0 minmax(0,1fr)}
+  .app.side-collapsed.list-collapsed{grid-template-columns:0 0 minmax(0,1fr)}
+}
+@media (min-width:760px) and (max-width:1099.98px){
+  .app.list-collapsed{grid-template-columns:0 minmax(0,1fr)}
+}
 /* ---------- medium: cover slides in ---------- */
 @media (max-width:1099.98px){
   .app{grid-template-columns:minmax(240px,300px) minmax(0,1fr)}
@@ -776,7 +884,7 @@ body.mark-moving,body.mark-moving *{cursor:grabbing!important}
   [data-view="flow"] .deck .st-x{top:4px;right:4px}
   [data-view="flow"] .deck .st textarea{padding-right:30px;min-height:60px}
   [data-view="flow"] .deck .st textarea{cursor:text}
-  [data-view="flow"] .deck .st-rz,[data-view="flow"] .deck .st-grip,[data-view="flow"] .deck .ln{display:none}
+  [data-view="flow"] .deck .st-rz,[data-view="flow"] .deck .st-grip,[data-view="flow"] .deck .ln,[data-view="flow"] .deck .wf{display:none}
   [data-view="flow"] .deck .st[data-k="i"],[data-view="flow"] .deck .st[data-k="g"]{width:100%}
   [data-view="flow"] .deck .tabs-layer{position:static;display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
   [data-view="flow"] .deck .mark{display:contents}
@@ -846,6 +954,7 @@ body.mark-moving,body.mark-moving *{cursor:grabbing!important}
   </section>
 
   <main class="edit">
+    <button class="list-fold" id="listFold" type="button" aria-controls="noteList" hidden></button>
     <div class="no-note" id="noNote">
       <div class="card">
         <h2 id="noNoteH">Ett tomt blad väntar</h2>
@@ -862,6 +971,7 @@ body.mark-moving,body.mark-moving *{cursor:grabbing!important}
           <span class="fmt-target hide-phone" id="fmtTarget" data-t="note" title="Typsnitt, storlek och justering gäller det du senast klickade i: bladet, en post-it eller en textruta">Bladet</span>
           <span class="grow"></span>
           <button class="tb" id="lineTool" type="button" aria-haspopup="true" aria-label="Pil eller linje" title="Lägg en pil, en linje utan pil eller en dubbelpil på bladet"><span class="ic" data-i="arrow"></span><span class="hide-phone">Pil</span></button>
+          <button class="tb" id="wireTool" type="button" aria-haspopup="true" aria-label="Skiss: former och gränssnittsdelar" title="Skiss: lägg former, knappar, bildrutor och ramar för mobil och dator på bladet"><span class="ic" data-i="wire"></span><span class="hide-phone">Skiss</span></button>
           <button class="tb tool" id="tboxTool" type="button" aria-label="Textruta. Klicka, eller dra den till bladet." title="Textruta. Klicka, eller dra den till bladet"><span class="ic" data-i="tbox"></span><span class="hide-phone">Textruta</span></button>
           <button class="tb tool pad" id="pad" type="button" data-c="y" aria-haspopup="true" aria-label="Post-it. Klicka för att välja färg, eller dra en lapp till bladet." title="Post-it. Klicka för att välja färg, eller dra en lapp till bladet"><span class="ic" data-i="sticky"></span><span class="hide-phone">Post-it</span></button>
           <button class="tb" id="imgBtn" type="button" title="Lägg in bilder"><span class="ic" data-i="image"></span><span class="hide-phone">Bild</span></button>
@@ -918,7 +1028,7 @@ body.mark-moving,body.mark-moving *{cursor:grabbing!important}
         <article class="sheet first" id="sheet" data-paper="blank">
           <div class="stickies" id="stickies"></div>
           <textarea class="title" id="title" rows="1" placeholder="Rubrik" aria-label="Sidans rubrik" maxlength="200"></textarea>
-          <div class="body prose" id="body" contenteditable="true" role="textbox" aria-multiline="true" aria-label="Anteckning" data-ph="Skriv här. Klistra in eller släpp bilder direkt på bladet."></div>
+          <div class="body prose" id="body" contenteditable="true" role="textbox" aria-multiline="true" aria-label="Anteckning"></div>
           <div class="img-tools" id="imgTools" hidden>
             <button type="button" data-w="s">Liten</button>
             <button type="button" data-w="m">Mellan</button>
@@ -1016,6 +1126,7 @@ const ICONS = {
   fwd: '<path d="M9 5l7 7-7 7"/>',
   calendar: '<rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 9.5h17M8 3v4M16 3v4"/>',
   arrow: '<path d="M5 19L19 5M10.5 5H19v8.5"/>',
+  wire: '<rect x="3.5" y="4.5" width="17" height="15" rx="2"/><path d="M3.5 9.5h17M9.5 9.5v10"/>',
   line: '<path d="M5 19L19 5"/>',
   arrow2: '<path d="M5 19L19 5M11.5 5H19v7.5M5 11.5V19h7.5"/>',
   move: '<path d="M12 3.5v17M3.5 12h17M9 6l3-2.5L15 6M9 18l3 2.5 3-2.5M6 9l-2.5 3L6 15M18 9l2.5 3-2.5 3"/>',
@@ -1252,6 +1363,22 @@ let cur = null, curId = null, dirty = false, tSave = 0, saveErr = '', tRetry = 0
 const pg = () => cur.pages[pi];
 const getNote = id => (id === curId && cur) ? cur : S.notes.get(id);
 const folderOf = n => (n.folder && S.folders.has(n.folder)) ? n.folder : '';
+const folderParent = id => { const f = S.folders.get(id), p = f && f.parent; return p && p !== id && S.folders.has(p) ? p : ''; };
+function folderTree() {   // [[id, folder, depth]] in the order they are shown: every folder followed by the folders inside it
+  const kids = new Map(), all = sortedByName(S.folders);
+  for (const [id, f] of all) { const p = folderParent(id); if (!kids.has(p)) kids.set(p, []); kids.get(p).push([id, f]); }
+  const out = [], seen = new Set(), walk = (p, d) => { for (const [id, f] of kids.get(p) || []) { if (seen.has(id)) continue; seen.add(id); out.push([id, f, d]); walk(id, d + 1); } };
+  walk('', 0);
+  for (const [id, f] of all) if (!seen.has(id)) { seen.add(id); out.push([id, f, 0]); walk(id, 1); }   // folders that point at each other in a ring: still shown
+  return out;
+}
+function folderKids(id) {   // the folder itself and every folder inside it, however deep
+  const out = new Set([id]); let grew = true;
+  while (grew) { grew = false; for (const [k] of S.folders) if (!out.has(k) && out.has(folderParent(k))) { out.add(k); grew = true; } }
+  return out;
+}
+const folderPath = id => { const names = []; for (let k = id, n = 0; k && n < 20; k = folderParent(k), n++) names.unshift(S.folders.get(k).name); return names.join(' / '); };
+const indent = d => Math.min(d, 6) * 16;
 const folderColor = id => { const f = S.folders.get(id); return f && CAT_COLORS.includes(f.color) ? f.color : ''; };   // '' = the yellow every folder starts with
 const folderIcon = (id, size) => { const i = I(id ? 'folder' : 'loose', size), c = id && folderColor(id); if (c) i.style.color = 'var(--c-' + c + ')'; return i; };
 function folderSwatches(id) {   // the colour of a folder: on its tab on the sheet and on its symbol in the lists
@@ -1265,7 +1392,7 @@ const marksOf = p => (Array.isArray(p.marks) ? p.marks : []).filter(m => m && S.
 function pagesOf(n) { return Array.isArray(n.pages) && n.pages.length ? n.pages : [{ id: 'p1', html: n.html || '', stickies: n.stickies || [] }]; }
 const noteHtml = n => pagesOf(n).map(p => p.html || '').join(' ');
 const pageTitle = (n, p, i) => p.title != null ? String(p.title) : (i === 0 ? String(n.title || '') : '');
-const stickyCount = n => pagesOf(n).reduce((a, p) => a + (p.stickies || []).filter(x => x.k !== 't' && x.k !== 'i' && x.k !== 'g' && x.k !== 'l').length, 0);
+const stickyCount = n => pagesOf(n).reduce((a, p) => a + (p.stickies || []).filter(x => x.k !== 't' && x.k !== 'i' && x.k !== 'g' && x.k !== 'l' && x.k !== 'w').length, 0);
 /* a picture is either in the text (img data-ref) or lies free on the sheet (a sticky of kind "i" with a ref) */
 const pageRefs = p => [...htmlRefs(p.html), ...(p.stickies || []).filter(x => x && x.k === 'i' && x.ref).map(x => x.ref)];
 const noteRefs = n => pagesOf(n).flatMap(pageRefs);
@@ -1288,7 +1415,7 @@ function visibleNotes() {
   if (!q && UI.filter === 'trash') return trashedNotes();
   if (q) arr = arr.filter(([id, n]) => noteText(id, n).includes(q));
   else if (UI.filter === 'loose') arr = arr.filter(([, n]) => !folderOf(n));
-  else if (UI.filter.startsWith('f:')) arr = arr.filter(([, n]) => folderOf(n) === UI.filter.slice(2));
+  else if (UI.filter.startsWith('f:')) { const inside = folderKids(UI.filter.slice(2)); arr = arr.filter(([, n]) => inside.has(folderOf(n))); }
   else if (UI.filter.startsWith('c:')) arr = arr.filter(([, n]) => catsOf(n).includes(UI.filter.slice(2)));
   const by = prefs.sort === 'name' ? (a, b) => (!a[1].title - !b[1].title) || collator.compare(a[1].title || '', b[1].title || '') || (b[1].updated || 0) - (a[1].updated || 0)
     : prefs.sort === 'created' ? (a, b) => (b[1].created || 0) - (a[1].created || 0)
@@ -1329,13 +1456,14 @@ function renderStore() {
   else el.textContent = 'Hämtar dina anteckningar…';
 }
 function sortedByName(map) { return [...map].sort((a, b) => collator.compare(a[1].name || '', b[1].name || '')); }
-function navRow({ key, icon, dot, name, count, more, tint }) {
+function navRow({ key, icon, dot, name, count, more, tint, depth }) {
   const on = !UI.q.trim() && UI.filter === key && !calOpen();
   const li = h('li', { class: 'nav-row' + (on ? ' on' : '') });
   li.append(h('button', { class: 'nav-item', type: 'button', 'aria-current': on ? 'true' : null, onclick: () => setFilter(key) },
     icon ? (() => { const i = I(icon, 17); if (tint) i.style.color = 'var(--c-' + tint + ')'; return i; })() : h('span', { class: 'dot', dataset: { c: dot } }),
     h('span', { class: 'nm', text: name }), h('span', { class: 'ct', text: String(count) })));
   if (more) li.append(h('button', { class: 'more', type: 'button', 'aria-label': 'Alternativ för ' + name, onclick: e => more(e.currentTarget, li) }, I('more', 16)));
+  if (depth) { li.firstChild.style.paddingLeft = (8 + indent(depth)) + 'px'; li.dataset.depth = depth; }
   return li;
 }
 let navPending = false;
@@ -1347,7 +1475,7 @@ function renderNav() {
     navRow({ key: 'all', icon: 'all', name: 'Alla anteckningar', count: notes.length }),
     navRow({ key: 'loose', icon: 'loose', name: 'Lösa blad', count: notes.filter(n => !folderOf(n)).length }),
     navRow({ key: 'trash', icon: 'trash', name: 'Papperskorg', count: trashedNotes().length }));
-  const fl = sortedByName(S.folders).map(([id, f]) => navRow({ key: 'f:' + id, icon: 'folder', tint: folderColor(id), name: f.name, count: notes.filter(n => folderOf(n) === id).length, more: (a, li) => folderMenu(a, li, id) }));
+  const fl = folderTree().map(([id, f, d]) => { const inside = folderKids(id); return navRow({ key: 'f:' + id, icon: 'folder', tint: folderColor(id), name: f.name, depth: d, count: notes.filter(n => inside.has(folderOf(n))).length, more: (a, li) => folderMenu(a, li, id) }); });
   $('#navFolders').replaceChildren(...(fl.length ? fl : [h('li', { class: 'nav-empty', text: 'Inga mappar än. Tryck på plus.' })]));
   const cl = sortedByName(S.categories).map(([id, c]) => navRow({ key: 'c:' + id, dot: c.color, name: c.name, count: notes.filter(n => catsOf(n).includes(id)).length, more: (a, li) => catMenu(a, li, id) }));
   $('#navCats').replaceChildren(...(cl.length ? cl : [h('li', { class: 'nav-empty', text: 'Inga kategorier än. Tryck på plus.' })]));
@@ -1383,14 +1511,36 @@ $('#addCat').addEventListener('click', () => addInline($('#navCats'), h('span', 
   if (!v) return; createCategory(v); refreshAfterTaxonomy();
 }));
 function folderMenu(anchor, li, id) {
-  toggleMenu(anchor, m => m.append(folderSwatches(id),
-    menuBtn('Byt namn', () => renameInline(li, folderIcon(id, 17), 'folders', id)),
-    menuBtn('Ta bort mapp', async () => {
-      const f = S.folders.get(id); if (!f) return;
-      if (!await ask('Ta bort mappen?', '”' + f.name + '” tas bort. Anteckningarna i mappen finns kvar som lösa blad.', 'Ta bort mapp')) return;
-      if (UI.filter === 'f:' + id) UI.filter = 'all';
-      await del('folders', id); renderAll();
-    }, 'danger')));
+  toggleMenu(anchor, m => {
+    const depth = +li.dataset.depth || 0;
+    const moveList = () => {   // where the folder should lie: at the top, or inside any folder that is not itself or inside it
+      const own = folderKids(id), now = folderParent(id);
+      const to = (pid, label, d) => h('button', { class: 'menu-btn', type: 'button', role: 'menuitemradio', 'aria-checked': String(now === pid), onclick: () => {
+        closeMenu(); const f = S.folders.get(id); if (!f || now === pid) return;
+        const n = Object.assign({}, f); if (pid) n.parent = pid; else delete n.parent; put('folders', id, n); renderNav(); refreshAfterTaxonomy();
+      } }, (() => { const i = folderIcon(pid, 16); i.style.marginLeft = indent(d) + 'px'; return i; })(), h('span', { class: 'nm', text: label }), h('span', { class: 'tick' }, I('check', 16)));
+      m.replaceChildren(h('div', { class: 'menu-note', text: 'Lägg ”' + S.folders.get(id).name + '” i' }), to('', 'Överst, inte i någon mapp', 0), ...folderTree().filter(([k]) => !own.has(k)).map(([k, f, d]) => to(k, f.name, d)));
+      placeMenu();
+    };
+    m.append(folderSwatches(id),
+      menuBtn('Byt namn', () => renameInline(li, folderIcon(id, 17), 'folders', id)),
+      menuBtn('Ny mapp i den här', () => {
+        if ($('.inline-in', sideEl)) return;
+        const lead = I('folder', 17), inp = inlineInput('', 'Mappens namn', v => { if (!v) return; put('folders', uid('f'), { name: v, parent: id, created: Date.now() }); refreshAfterTaxonomy(); });
+        const row = h('li', { class: 'nav-row' }, h('div', { class: 'nav-edit' }, lead, inp)); row.firstChild.style.paddingLeft = (8 + indent(depth + 1)) + 'px';
+        li.after(row); inp.focus();
+      }),
+      h('button', { class: 'menu-btn', type: 'button', onclick: moveList }, 'Flytta till en annan mapp'),
+      menuBtn('Ta bort mapp', async () => {
+        const f = S.folders.get(id); if (!f) return;
+        const inner = [...S.folders].filter(([k]) => folderParent(k) === id);
+        if (!await ask('Ta bort mappen?', '”' + f.name + '” tas bort. Anteckningarna i mappen finns kvar som lösa blad.' + (inner.length ? ' Mapparna i den flyttas upp ett steg.' : ''), 'Ta bort mapp')) return;
+        if (UI.filter === 'f:' + id) UI.filter = 'all';
+        const up = folderParent(id);
+        for (const [k, x] of inner) { const n = Object.assign({}, x); if (up) n.parent = up; else delete n.parent; put('folders', k, n); }   // the folders inside move up one step
+        await del('folders', id); renderAll();
+      }, 'danger'));
+  });
 }
 function catMenu(anchor, li, id) {
   toggleMenu(anchor, m => {
@@ -1414,6 +1564,12 @@ function setFilter(key) {
 $('#q').addEventListener('input', e => { leaveCal(); UI.q = e.target.value; app.dataset.pane = 'list'; renderNav(); renderList(); if (cur) runFind(UI.q, false); });
 $('#q').addEventListener('keydown', e => { if (e.key === 'Enter') app.classList.remove('side-open'); });
 const isWide = () => matchMedia('(min-width:1100px)').matches;
+function syncListFold() {   // the list can only be folded away while a note is open; without one it is the way in
+  const shut = !!prefs.listShut && !!cur, b = $('#listFold'), t = shut ? 'Visa listan med anteckningar' : 'Fäll in listan, så får bladet mer plats';
+  app.classList.toggle('list-collapsed', shut); b.hidden = !cur;
+  b.replaceChildren(I(shut ? 'fwd' : 'back', 13)); b.setAttribute('aria-expanded', String(!shut)); b.title = t; b.setAttribute('aria-label', t);
+}
+$('#listFold').addEventListener('click', () => { prefs.listShut = !prefs.listShut; savePrefs(); syncListFold(); setTimeout(() => { fitTitle(); placeMenu(); }, 230); });
 function setCollapsed(v) { prefs.collapsed = !!v; savePrefs(); app.classList.toggle('side-collapsed', !!v); setTimeout(() => { fitTitle(); placeMenu(); }, 230); }
 app.classList.toggle('side-collapsed', !!prefs.collapsed);
 $('#openSide').addEventListener('click', () => { if (isWide()) { setCollapsed(false); $('#collapseSide').focus(); } else app.classList.add('side-open'); });
@@ -1540,7 +1696,7 @@ function renderAll() { statusStyle(); renderNav(); renderList(); renderEditorShe
 /* ================= editor: open, save ================= */
 function renderEditorShell() {
   const open = !!cur;
-  editorEl.hidden = !open; noNoteEl.hidden = open;
+  editorEl.hidden = !open; noNoteEl.hidden = open; syncListFold();
   if (!open) {
     const none = UI.ready && allNotes().length === 0;
     $('#noNoteH').textContent = !UI.ready ? 'Bläddrar fram blocket…' : none ? 'Ett tomt blad väntar' : 'Välj ett blad';
@@ -1589,18 +1745,24 @@ function flushSave() {
   refreshSaveState(); renderList(); renderNav(); renderPages();
   return p;
 }
-function newNote() {
+function newNote(fmt) {
   leaveCal();
   flushSave();
   if (UI.filter === 'trash') UI.filter = 'all';
   const id = uid('n'), now = Date.now();
   const n = { title: '', named: false, pages: [{ id: uid('p'), title: '', html: '', stickies: [], marks: UI.filter.startsWith('c:') ? [{ id: uid('m'), c: UI.filter.slice(2), y0: 96, y1: 124 }] : [] }], preview: '', imgs: 0, folder: UI.filter.startsWith('f:') ? UI.filter.slice(2) : '', cats: UI.filter.startsWith('c:') ? [UI.filter.slice(2)] : [], font: prefs.font, size: prefs.size, paper: prefs.paper, orient: prefs.orient === 'l' ? 'l' : 'p', created: now, updated: now, by: CLIENT };
+  if (FMT[fmt] && fmt !== 'a4') n.fmt = fmt;
   if (UI.q.trim()) { UI.q = ''; $('#q').value = ''; }
   put('notes', id, n);
   app.classList.remove('side-open');
   openNote(id); bodyEl.focus();
 }
-['#newNote2', '#newNote3'].forEach(s => $(s).addEventListener('click', newNote));
+const fmtItems = (now, pick) => Object.entries(FMT).map(([k, f]) => h('button', { class: 'menu-btn', type: 'button', role: 'menuitemradio', 'aria-checked': String(now === k), dataset: { fmt: k }, onclick: () => { closeMenu(); pick(k); } },
+  h('span', { class: 'nm' }, f[0] + (k === 'a4' ? ' · standard' : ''), h('small', { text: f[3] })), h('span', { class: 'tick' }, I('check', 16))));
+['#newNote2', '#newNote3'].forEach(s => $(s).addEventListener('click', e => toggleMenu(e.currentTarget, m => {   // a new note: on which size of paper?
+  m.append(h('div', { class: 'menu-h', text: 'Ny anteckning på' }), ...fmtItems('', newNote));
+  requestAnimationFrame(() => { const b = m.querySelector('[data-fmt="a4"]'); if (b) b.focus(); });   // Enter gives the ordinary A4
+})));
 /* ================= calendar ================= */
 /* Events live in their own collection: { title, date: 'YYYY-MM-DD', time: 'HH:MM' or '', created, by }.
    The calendar also shows which notes were written or changed on each day. */
@@ -2022,7 +2184,10 @@ let layouts = [], statics = [], zoomZ = 1, viewed = [0, 0];
 const isNarrow = () => matchMedia('(max-width:759.98px)').matches;
 const isPaged = () => !isNarrow() || !!prefs.phonePage;   // a phone shows running text, or (the user's choice) the same fixed sheets as the computer
 const viewMode = () => !isPaged() ? 'flow' : (prefs.view === 'scroll' ? 'scroll' : 'flip');
-const geom = () => (cur && cur.orient === 'l') ? { W: 1123, H: 794 } : { W: 794, H: 1123 };
+const FMT = { a4: ['A4', 794, 1123, 'Vanligt papper'], a3: ['A3', 1123, 1587, 'Dubbelt så stort'], a2: ['A2', 1587, 2245, 'Fyra gånger så stort'] };   // the sheet in pixels (A4 = 794 × 1123); cur.fmt, A4 when missing
+const noteFmt = n => n && FMT[n.fmt] ? n.fmt : 'a4';
+const geom = () => { const f = FMT[noteFmt(cur)]; return cur && cur.orient === 'l' ? { W: f[2], H: f[1] } : { W: f[1], H: f[2] }; };
+const imgMax = () => (geom().H - PG.PT - PG.PB + 11) + 'px';   // a picture in the text is at most as tall as the page has room for
 const pitch = () => geom().H + PG.G;
 const nOf = j => (layouts[j] && layouts[j].n) || 1;
 const gIndex = (j, k) => { let g = 0; for (let i = 0; i < j; i++) g += nOf(i); return g + k; };
@@ -2206,18 +2371,20 @@ function unpaginate(sheetEl, body) {
   sheetEl.style.width = sheetEl.style.height = sheetEl.style.transform = '';
   const papers = sheetEl.querySelector(':scope > .papers'); if (papers) papers.remove();
 }
+const freeCount = () => pg().stickies.filter(x => x && x.k !== 'w').length;
 function staticSticky(st) {
+  if (st.k === 'w') { const el = h('div', { class: 'wf' }); wfDraw(el, st); return el; }
   if (st.k === 'l') { const el = h('div', { class: 'ln' }); el.append(lineParts(st)); return el; }
   if (st.k === 'g') {
     const el = h('div', { class: 'st', dataset: { k: 'g' } }), box = h('div', { class: 'st-table prose' });
-    el.style.setProperty('--st-w', clampN(st.w, 80, 1100, 400) + 'px');
+    el.style.setProperty('--st-w', clampN(st.w, 80, 2300, 400) + 'px');
     el.style.left = 'calc((100% - var(--st-w)) * ' + clampN(st.x, 0, 1, 0) + ')'; el.style.top = clampN(st.y, 0, 1e6, 0) + 'px';
     box.style.fontSize = (cur.size || 17) + 'px'; box.innerHTML = sanitize(st.html || '');
     el.append(box); return el;
   }
   if (st.k === 'i') {
     const el = h('div', { class: 'st', dataset: { k: 'i' } }), u = /^[ad]:[A-Za-z0-9_-]+$/.test(st.ref || '') ? imgUrl(st.ref) : '';
-    el.style.setProperty('--st-w', clampN(st.w, 30, 1100, 300) + 'px');
+    el.style.setProperty('--st-w', clampN(st.w, 30, 2300, 300) + 'px');
     el.style.left = 'calc((100% - var(--st-w)) * ' + clampN(st.x, 0, 1, 0) + ')'; el.style.top = clampN(st.y, 0, 1e6, 0) + 'px';
     const img = h('img', { alt: 'Bild i anteckningen' }); if (u) img.src = u; if (st.r > 0) img.style.aspectRatio = String(1 / st.r);
     applyBorder(el, Object.assign({ bw: 0 }, st));
@@ -2235,10 +2402,10 @@ function staticSticky(st) {
 function buildStatic(p, j, forPdf) {
   const win = h('div', { class: 'win static', dataset: { j } });
   const sh = h('article', { class: 'sheet' + (j === 0 ? ' first' : ''), dataset: { paper: cur.paper || 'blank', orient: cur.orient === 'l' ? 'l' : 'p' } });
-  sh.style.setProperty('--note-font', fontCss(cur.font)); sh.style.width = geom().W + 'px';
+  sh.style.setProperty('--note-font', fontCss(cur.font)); sh.style.width = geom().W + 'px'; sh.style.setProperty('--img-max', imgMax());
   const body = h('div', { class: 'body prose' }); body.style.fontSize = (cur.size || 17) + 'px';
   body.innerHTML = sanitize(p.html); hydrateImgs(body);
-  resolveBranches(p.stickies || []);
+  resolveAnchors(p.stickies || []); resolveBranches(p.stickies || []);
   sh.append(h('div', { class: 'stickies' }, (p.stickies || []).map(staticSticky)));
   sh.append(h('div', { class: 'title', text: (p.title || '').trim() }));   // always there, like the live field, so both take the same room
   sh.append(body); win.append(sh);
@@ -2284,7 +2451,8 @@ function syncTabs(sheetEl, p, j, n, live, boxes) {
     return { m, name: c.name, color: c.color, segs };
   }).filter(x => x.segs.length).sort((a, b) => a.segs[0].y0 - b.segs[0].y0);
   if (live) markStyle(flow ? marks : []);
-  const sig = JSON.stringify([fname, fcol, n, P, flow, marks.map(x => [x.m.id, x.name, x.color, x.segs.map(g => [Math.round(g.y0), Math.round(g.y1)]), !!x.m.frame, !!x.m.fill])]);
+  const hid = flow && (p.stickies || []).some(x => x && (x.k === 'w' || x.k === 'l'));   // the phone's running-text view cannot show sketches and arrows: say that they exist
+  const sig = JSON.stringify([f ? folderPath(f) : '', fcol, hid, n, P, flow, marks.map(x => [x.m.id, x.name, x.color, x.segs.map(g => [Math.round(g.y0), Math.round(g.y1)]), !!x.m.frame, !!x.m.fill])]);
   if (layer.dataset.sig === sig) return;
   layer.dataset.sig = sig;
   const mk = (cls, tid, label, title, kids, fn) => {
@@ -2296,10 +2464,11 @@ function syncTabs(sheetEl, p, j, n, live, boxes) {
   for (let k = 0; k < n; k++) {
     const grp = h('div', { class: 'tabs', role: 'group', 'aria-label': 'Mapp och kategori', dataset: { k } });
     grp.style.top = (k * P + 18) + 'px'; low[k] = k * P + 18 + 65 + 6;
-    const ft = mk(f ? 'tab-folder' : 'tab-none', 'f' + k, (f ? 'Mapp: ' + fname : 'Ingen mapp') + '. Byt mapp eller färg', 'Mapp för hela anteckningen. Klicka för att byta mapp eller färg', [I(f ? 'folder' : 'loose', 15), h('span', { class: 'nm', text: f ? fname : 'Ingen mapp' })], noteFolderMenu);
+    const ft = mk(f ? 'tab-folder' : 'tab-none', 'f' + k, (f ? 'Mapp: ' + folderPath(f) : 'Ingen mapp') + '. Byt mapp eller färg', (f && folderParent(f) ? folderPath(f) + '. ' : '') + 'Mapp för hela anteckningen. Klicka för att byta mapp eller färg', [I(f ? 'folder' : 'loose', 15), h('span', { class: 'nm', text: f ? fname : 'Ingen mapp' })], noteFolderMenu);
     if (fcol) ft.dataset.c = fcol;
     grp.append(ft,
       mk('tab-add', 'a' + k, 'Märk en del av sidan med en kategori', 'Märk en del av sidan med en kategori', [I('plus', 13), h('span', { class: 'nm', text: 'Kategori' })], () => startMark(k)));
+    if (hid) grp.append(mk('tab-add', 'v' + k, 'Sidan har skisser eller pilar. Visa dem i sidvyn', 'Skisser och pilar syns i sidvyn', [I('wire', 13), h('span', { class: 'nm', text: 'Visa skissen' })], () => setPhonePage(true)));
     out.push(grp);
   }
   for (const x of marks) x.segs.forEach((g, gi) => {
@@ -2503,8 +2672,8 @@ function refreshTabs() {
   if (viewMode() !== 'flow') relayoutAll();
 }
 function fitZ() {
-  if (isNarrow()) return Math.max(.25, Math.min(1, (scrollEl.clientWidth - 14) / (geom().W + 70)));   // phone: sheet and tabs share the width, both scaled
-  const avail = scrollEl.clientWidth - 32 - 112; return Math.max(.25, Math.min(1, avail / geom().W));   // room at the sides for the page edges and the tabs
+  if (isNarrow()) return Math.max(.1, Math.min(1, (scrollEl.clientWidth - 14) / (geom().W + 70)));   // phone: sheet and tabs share the width, both scaled
+  const avail = scrollEl.clientWidth - 32 - 112; return Math.max(.1, Math.min(1, avail / geom().W));   // room at the sides for the page edges and the tabs
 }
 function syncViewBtn() { const b = $('#pgView'), page = isPaged(); b.textContent = page ? 'Mobilvy' : 'Sidvy'; b.title = page ? 'Visa som löpande text, lättare att skriva i' : 'Visa bladen som på datorn: flytta post-it, textrutor och pilar fritt'; b.setAttribute('aria-label', b.title); }
 function setPhonePage(v) {   // phone: switch between running text and the sheets of the computer
@@ -2565,7 +2734,7 @@ function renderDeck() {
     unpaginate(sheet, bodyEl); sheet._boxes = null; syncTabs(sheet, pg(), pi, 1, true);
     cur.pages.forEach((p, j) => { layouts[j] = { n: 1, total: 0, texts: [j === pi ? '' : htmlText(p.html).slice(0, 240)] }; });
   } else {
-    sheet.style.width = geom().W + 'px';
+    sheet.style.width = geom().W + 'px'; sheet.style.setProperty('--img-max', imgMax());
     cur.pages.forEach((p, j) => {
       if (j === pi) return;
       const w = buildStatic(p, j); statics[j] = w;
@@ -2710,7 +2879,7 @@ function renderPages() {
       const th = h('button', { class: 'pg-thumb', type: 'button', 'aria-label': 'Sida ' + (g + 1) + ' av ' + total, title: 'Sida ' + (g + 1), onclick: () => goTo(j, k) }, mini);
       let marks = 0;
       for (const st of (p.stickies || [])) {
-        if (st.k === 't' || marks >= 8) continue;
+        if (st.k === 't' || st.k === 'w' || st.k === 'l' || marks >= 8) continue;   // the little coloured marks stand for post-its
         const y = clampN(st.y, 0, 1e6, 0); if (paged && Math.min(n - 1, Math.floor(y / P)) !== k) continue;
         const m = h('i', { class: 'pg-st', dataset: { c: st.c || 'y' } }); marks++;
         m.style.left = (clampN(st.x, 0, 1, 1) * 76) + '%'; m.style.top = Math.max(0, Math.min(82, paged ? (y - k * P) / H * 100 : y / 11)) + '%'; th.append(m);
@@ -3054,6 +3223,7 @@ $('#sheetBtn').addEventListener('click', () => toggleMenu($('#sheetBtn'), m => {
   };
   group('Papper', paperSel, [['blank', 'Blankt'], ['lined', 'Linjerat']]);
   group('Riktning', $('#orientSel'), [['p', 'Stående'], ['l', 'Liggande']]);
+  m.append(h('div', { class: 'menu-h', text: 'Format' }), ...fmtItems(noteFmt(cur), k => { if (!cur || noteFmt(cur) === k) return; if (k === 'a4') delete cur.fmt; else cur.fmt = k; vp = 0; renderDeck(); scrollEl.scrollTop = 0; touch(); }));
   if (viewMode() !== 'flow') group('Byt sida genom att', $('#viewSel'), [['flip', 'Bläddra åt sidan'], ['scroll', 'Rulla nedåt']]);
   if (isNarrow()) {
     m.append(h('div', { class: 'menu-h', text: 'Visa på mobilen' }));
@@ -3203,9 +3373,9 @@ function noteFolderMenu(anchor) {
   toggleMenu(anchor, m => {
     const now = folderOf(cur);
     const pick = id => { closeMenu(); if (!cur) return; cur.folder = id; renderMeta(); dirty = true; flushSave(); };
-    const item = (id, name) => h('button', { class: 'menu-btn', type: 'button', role: 'menuitemradio', 'aria-checked': String(now === id), onclick: () => pick(id) },
-      folderIcon(id, 16), h('span', { class: 'nm', text: name }), h('span', { class: 'tick' }, I('check', 16)));
-    m.append(item('', 'Lösa blad (ingen mapp)'), ...sortedByName(S.folders).map(([id, x]) => item(id, x.name)));
+    const item = (id, name, d) => h('button', { class: 'menu-btn', type: 'button', role: 'menuitemradio', 'aria-checked': String(now === id), onclick: () => pick(id) },
+      (() => { const i = folderIcon(id, 16); if (d) i.style.marginLeft = indent(d) + 'px'; return i; })(), h('span', { class: 'nm', text: name }), h('span', { class: 'tick' }, I('check', 16)));
+    m.append(item('', 'Lösa blad (ingen mapp)', 0), ...folderTree().map(([id, x, d]) => item(id, x.name, d)));
     const inp = h('input', { class: 'menu-in', type: 'text', maxlength: '60', placeholder: 'Ny mapp, tryck Enter', 'aria-label': 'Ny mapp' });
     inp.addEventListener('keydown', e => {
       if (e.key !== 'Enter') return; e.preventDefault();
@@ -3253,7 +3423,7 @@ function borderMenu(anchor, el, s) {
   };
   toggleMenu(anchor, build);
 }
-function renderStickies() { setActiveSt(null); resolveBranches(pg().stickies); stickiesEl.replaceChildren(...pg().stickies.map(stickyEl)); stickiesEl.querySelectorAll('textarea').forEach(fitSt); }
+function renderStickies() { setActiveSt(null); resolveAnchors(pg().stickies); resolveBranches(pg().stickies); stickiesEl.replaceChildren(...pg().stickies.map(stickyEl)); stickiesEl.querySelectorAll('textarea').forEach(fitSt); wfAfterRender(); }
 const clampN = (v, lo, hi, d) => { v = +v; return Number.isFinite(v) ? Math.max(lo, Math.min(hi, v)) : d; };
 function fitSt(t) {   // as tall as the user made it, but never shorter than its text (rows and the placeholder must not count)
   const ph = t.placeholder; if (!t.value) t.placeholder = '';
@@ -3262,6 +3432,7 @@ function fitSt(t) {   // as tall as the user made it, but never shorter than its
 }
 function stickyEl(s) {
   if (s.k === 'l') return lineEl(s);
+  if (s.k === 'w') return wireEl(s);
   if (s.k === 'i') return imageStickyEl(s);
   if (s.k === 'g') return tableStickyEl(s);
   const isT = s.k === 't', minH = 24;
@@ -3353,7 +3524,7 @@ setPadColor(prefs.pad || 'y');
 function addSticky(pos, kind) {
   if (!cur) return;
   const isT = kind === 't';
-  if (pg().stickies.length >= 30) { toast('Det får plats högst 30 lappar och textrutor på en sida.'); return; }
+  if (freeCount() >= 30) { toast('Det får plats högst 30 lappar och textrutor på en sida.'); return; }
   let x = 1, y;
   if (pos) { x = pos.x; y = pos.y; }
   else {
@@ -3566,7 +3737,7 @@ $('#imgDl').addEventListener('click', () => { if (selImg) downloadImg(selImg, [.
 /* ================= pictures that lie free on the sheet ================= */
 function imageStickyEl(s) {
   const el = h('div', { class: 'st', tabindex: '0', dataset: { id: s.id, k: 'i' }, 'aria-label': 'Bild som går att flytta' });
-  const place = () => { el.style.setProperty('--st-w', clampN(s.w, 30, 1100, 300) + 'px'); el.style.left = 'calc((100% - var(--st-w)) * ' + clampN(s.x, 0, 1, 0) + ')'; el.style.top = clampN(s.y, 0, 1e6, 0) + 'px'; };
+  const place = () => { el.style.setProperty('--st-w', clampN(s.w, 30, 2300, 300) + 'px'); el.style.left = 'calc((100% - var(--st-w)) * ' + clampN(s.x, 0, 1, 0) + ')'; el.style.top = clampN(s.y, 0, 1e6, 0) + 'px'; };
   place(); el._place = place;
   if (s.bw == null) s.bw = 0;   // a picture has no frame until one is chosen
   applyBorder(el, s);
@@ -3640,7 +3811,7 @@ function dragImage(s, el, ox, oy) {   // ox, oy: where on the picture the pointe
 }
 function liftImage(img) {   // a picture in the text becomes a free picture at the same spot; returns its new element
   if (!cur || !img || !img.dataset.ref || viewMode() === 'flow') return null;
-  if (pg().stickies.length >= 30) { toast('Det får plats högst 30 lappar, textrutor och fria bilder på en sida.'); return null; }
+  if (freeCount() >= 30) { toast('Det får plats högst 30 lappar, textrutor och fria bilder på en sida.'); return null; }
   const r = img.getBoundingClientRect(), b = sheet.getBoundingClientRect(), w = Math.max(30, Math.round(r.width / zoomZ));
   const s = { id: uid('s'), k: 'i', ref: img.dataset.ref, w, r: img.naturalWidth ? img.naturalHeight / img.naturalWidth : r.height / Math.max(1, r.width), x: 0, y: Math.max(0, Math.round((r.top - b.top) / zoomZ)), bw: IMG_BW[img.dataset.bw] || 0, bc: img.dataset.bc || 'ink' };
   s.x = Math.round(Math.max(0, Math.min(1, (r.left - b.left) / zoomZ / Math.max(1, sheet.offsetWidth - w))) * 1000) / 1000;
@@ -3797,6 +3968,7 @@ function lineEl(s) {
   let parts = null;
   function draw() {
     if (!lnBent(s)) { delete s.mx; delete s.my; }
+    if (s.c1 || s.c2) resolveAnchors(pg().stickies);   // an end that holds on to a sketch piece sits on its edge
     const fresh = lineParts(s); if (parts) parts.replaceWith(fresh); else el.prepend(fresh); parts = fresh;
     hits.forEach((hit, k) => {   // six grab strips follow the line, also when it is bent
       const a = lnAt(s, k / 6), b = lnAt(s, (k + 1) / 6);
@@ -3814,19 +3986,20 @@ function lineEl(s) {
   const bounds = () => viewMode() === 'flip' ? [vp * pitch() + 4, vp * pitch() + geom().H - 4] : [4, sheet.offsetHeight - 4];
   const at = ev => { const b = sheet.getBoundingClientRect(); return [(ev.clientX - b.left) / zoomZ, (ev.clientY - b.top) / zoomZ]; };
   const inside = p => { const lim = bounds(); return [Math.round(Math.max(4, Math.min(sheet.offsetWidth - 4, p[0]))), Math.round(Math.max(lim[0], Math.min(lim[1], p[1])))]; };
-  const track = (e, move) => {
+  const track = (e, move, done) => {
     if (e.button) return;
     e.preventDefault(); e.stopPropagation(); el.focus({ preventScroll: true }); el.classList.add('drag');
     const mv = ev => { ev.preventDefault(); move(ev); draw(); };
-    const up = () => { document.removeEventListener('pointermove', mv); document.removeEventListener('pointerup', up); document.removeEventListener('pointercancel', up); el.classList.remove('drag'); touch(); };
+    const up = () => { document.removeEventListener('pointermove', mv); document.removeEventListener('pointerup', up); document.removeEventListener('pointercancel', up); el.classList.remove('drag'); if (done) { done(); draw(); } touch(); };
     document.addEventListener('pointermove', mv); document.addEventListener('pointerup', up); document.addEventListener('pointercancel', up);
   };
-  const endDrag = (kx, ky, ox, oy) => e => track(e, ev => {
+  const endDrag = (kx, ky, ox, oy) => e => { const ck = kx === 'x1' ? 'c1' : 'c2'; track(e, ev => {
     let [x, y] = inside(at(ev));
+    delete s[ck]; wfHot(wfHit([x, y]));   // the end lets go of its piece while it is dragged; the piece under it lights up
     if (!lnBent(s)) { if (Math.abs(y - s[oy]) < 6) y = s[oy]; if (Math.abs(x - s[ox]) < 6) x = s[ox]; }   // a straight line snaps to level and to upright
     if (x === s[ox] && y === s[oy]) return;
     s[kx] = x; s[ky] = y;
-  });
+  }, () => { const o = wfHit([s[kx], s[ky]]); wfHot(null); if (o && o.id !== s[ck === 'c1' ? 'c2' : 'c1']) s[ck] = o.id; }); };   // dropped on a sketch piece: the end holds on to it and follows it
   const free1 = endDrag('x1', 'y1', 'x2', 'y2');
   h1.addEventListener('pointerdown', e => {
     const par = lineParent(s, pg().stickies); if (!par) return free1(e);
@@ -3841,6 +4014,7 @@ function lineEl(s) {
     const p0 = at(e), bent = lnBent(s), o = [s.x1, s.y1, s.x2, s.y2, s.mx, s.my], held = !!lineParent(s, pg().stickies);
     track(e, ev => {
       const p = at(ev), lim = bounds(), W = sheet.offsetWidth;
+      delete s.c2; if (!held) delete s.c1;   // dragging the line itself takes it off the pieces it held on to
       if (held) { const q = inside([o[2] + p[0] - p0[0], o[3] + p[1] - p0[1]]); s.x2 = q[0]; s.y2 = q[1]; return; }   // a branch stays on its parent: only its tip moves
       const xs = bent ? [o[0], o[2], o[4]] : [o[0], o[2]], ys = bent ? [o[1], o[3], o[5]] : [o[1], o[3]];
       const dx = Math.max(4 - Math.min(...xs), Math.min(W - 4 - Math.max(...xs), p[0] - p0[0])), dy = Math.max(lim[0] - Math.min(...ys), Math.min(lim[1] - Math.max(...ys), p[1] - p0[1]));
@@ -3855,7 +4029,7 @@ function lineEl(s) {
 }
 function addBranch(par, kind) {   // a second arrow that starts on the first one
   if (!cur || !pg().stickies.includes(par)) return;
-  if (pg().stickies.length >= 30) { toast('Det får plats högst 30 lappar, textrutor, bilder, tabeller och pilar på en sida.'); return; }
+  if (freeCount() >= 30) { toast('Det får plats högst 30 lappar, textrutor, bilder, tabeller och pilar på en sida.'); return; }
   const k = Math.floor(Math.max(par.y1, par.y2) / pitch()), top = k * pitch() + 8, bot = k * pitch() + geom().H - 8, W = sheet.offsetWidth;
   const n = pg().stickies.filter(x => x.k === 'l' && x.p === par.id).length, drop = 110 + n * 70;
   const y2 = Math.max(par.y1, par.y2) + drop <= bot ? Math.max(par.y1, par.y2) + drop : Math.max(top, Math.min(par.y1, par.y2) - drop);
@@ -3865,7 +4039,7 @@ function addBranch(par, kind) {   // a second arrow that starts on the first one
 }
 function addLine(kind) {
   if (!cur || viewMode() === 'flow') { if (cur) toast('Pilar och streck ritas i sidvyn.', { label: 'Byt till sidvy', fn: () => setPhonePage(true) }); return; }
-  if (pg().stickies.length >= 30) { toast('Det får plats högst 30 lappar, textrutor, bilder, tabeller och pilar på en sida.'); return; }
+  if (freeCount() >= 30) { toast('Det får plats högst 30 lappar, textrutor, bilder, tabeller och pilar på en sida.'); return; }
   const b = sheet.getBoundingClientRect(), v = scrollEl.getBoundingClientRect(), W = sheet.offsetWidth;
   const k = viewMode() === 'scroll' ? (viewed[0] === pi ? viewed[1] : 0) : vp, top = k * pitch(), bot = top + geom().H;
   const vl = Math.max(0, (Math.max(v.left, b.left) - b.left) / zoomZ), vr = Math.min(W, (Math.min(v.right, b.right) - b.left) / zoomZ), vt = Math.max(top, (v.top - b.top) / zoomZ), vb = Math.min(bot, (v.bottom - b.top) / zoomZ);
@@ -3874,6 +4048,334 @@ function addLine(kind) {
   pg().stickies.push(s); renderStickies(); layoutLive(); touch();
   const el = stickiesEl.querySelector('.ln[data-id="' + s.id + '"]'); if (el) el.focus({ preventScroll: true });
 }
+/* ================= sketch: wireframe pieces (k: 'w') with x, y, w, h in sheet pixels, a type t and, for some, a text ================= */
+const WF = {   // type: [name, width, height, text (missing = the piece has no text)]
+  rect: ['Rektangel', 200, 120], round: ['Rundad ruta', 200, 120], circle: ['Cirkel', 96, 96],
+  btn: ['Knapp', 144, 40, 'Knapp'], input: ['Textfält', 240, 40, 'Textfält'], select: ['Rullgardin', 240, 40, 'Välj'], check: ['Kryssruta', 184, 24, 'Alternativ'], radio: ['Radioknapp', 184, 24, 'Alternativ'], toggle: ['Reglage', 184, 24, 'Inställning'],
+  head: ['Rubrik', 240, 32, 'Rubrik'], text: ['Textrader', 240, 64], img: ['Bildruta', 200, 136], icon: ['Ikon', 32, 32], avatar: ['Avatar', 48, 48],
+  nav: ['Navigering', 304, 48, 'Titel'], tabs: ['Flikar', 304, 40, 'Flik 1, Flik 2, Flik 3'], bottom: ['Bottenmeny', 304, 56, 'Hem, Sök, Profil'], row: ['Listrad', 304, 64, 'Rubrik'], card: ['Kort', 216, 208], dialog: ['Dialogruta', 272, 168, 'Är du säker?'],
+  phone: ['Mobil', 320, 640], desk: ['Dator', 640, 416], mark: ['Kommentarsnummer', 28, 28, '1'] };
+const WF_GROUPS = [['Former', ['rect', 'round', 'circle']], ['Delar', ['btn', 'input', 'select', 'check', 'radio', 'toggle', 'head', 'text', 'img', 'icon', 'avatar']], ['Block', ['nav', 'tabs', 'bottom', 'row', 'card', 'dialog']], ['Ramar och noter', ['phone', 'desk', 'mark']]];
+const WF_GRID = 8, WF_MAX = 150, wfSnap = v => Math.round(v / WF_GRID) * WF_GRID;
+const wfType = s => WF[s.t] ? s.t : 'rect', wfFrame = s => s.t === 'phone' || s.t === 'desk', wfHasText = s => WF[wfType(s)][3] != null;
+const wfText = s => typeof s.text === 'string' ? s.text : WF[wfType(s)][3] || '';
+function wfDraw(el, s) {   // builds the piece from scratch for its present size; used for the live piece and for the still copies (other pages, presentation, PDF)
+  const t = wfType(s), w = clampN(s.w, 16, 2300, WF[t][1]), hh = clampN(s.h, 16, 2300, WF[t][2]);
+  el.dataset.t = t; if (s.f === 1 || s.f === 2) el.dataset.f = s.f; else delete el.dataset.f;
+  if (s.lock) el.dataset.lock = '1'; else delete el.dataset.lock;
+  el.style.left = clampN(s.x, -200, 2300, 0) + 'px'; el.style.top = clampN(s.y, 0, 1e6, 0) + 'px'; el.style.width = w + 'px'; el.style.height = hh + 'px';
+  const cross = (W, H) => [1, -1].map(k => { const d = h('i', { class: 'wf-x' }); d.style.width = Math.hypot(W, H) + 'px'; d.style.transform = 'translate(-50%,-50%) rotate(' + k * Math.atan2(H, W) + 'rad)'; return d; });
+  const label = () => h('span', { class: 'wf-label', text: wfText(s) });
+  const parts = () => { const p = wfText(s).split(',').map(x => x.trim()).filter(Boolean).slice(0, 6); return p.length ? p : ['']; };
+  const bars = n => Array.from({ length: Math.max(1, n) }, (_, i) => { const b = h('i', { class: 'wf-bar' }); if (n > 1 && i === n - 1) b.style.width = '62%'; return b; });
+  let kids = [];
+  if (t === 'btn' || t === 'input' || t === 'head' || t === 'mark') kids = [label()];
+  else if (t === 'select') kids = [label(), h('i', { class: 'wf-chev' })];
+  else if (t === 'img' || t === 'icon') kids = cross(w, hh);
+  else if (t === 'avatar') kids = [h('i', { class: 'wf-head' }), h('i', { class: 'wf-body' })];
+  else if (t === 'text') kids = bars(Math.floor((hh + 4) / 20));
+  else if (t === 'check') kids = [h('i', { class: 'wf-box' }), label()];
+  else if (t === 'radio') kids = [h('i', { class: 'wf-radio' }, h('i')), label()];
+  else if (t === 'toggle') kids = [h('i', { class: 'wf-switch' }, h('i')), label()];
+  else if (t === 'nav') kids = [h('i', { class: 'wf-burger' }, h('i'), h('i'), h('i')), label(), h('i', { class: 'wf-dot' })];
+  else if (t === 'tabs') kids = parts().map((x, i) => h('span', { class: 'wf-tab' + (i ? '' : ' on'), text: x }));
+  else if (t === 'bottom') kids = parts().map((x, i) => h('span', { class: 'wf-bn' + (i ? '' : ' on') }, h('i', { class: 'wf-dot' }), h('span', { text: x })));
+  else if (t === 'row') kids = [h('i', { class: 'wf-dot' }), h('span', { class: 'wf-rowtx' }, label(), h('i', { class: 'wf-bar' })), h('i', { class: 'wf-chev r' })];
+  else if (t === 'card') { const ih = Math.round(hh * .56), pic = h('i', { class: 'wf-pic' }, cross(w, ih)); pic.style.height = ih + 'px'; kids = [pic, h('i', { class: 'wf-lines' }, bars(Math.max(1, Math.min(4, Math.floor((hh - ih - 12) / 20)))))]; }
+  else if (t === 'dialog') kids = [label(), h('span', { class: 'wf-dlg-tx' }, bars(Math.max(1, Math.min(4, Math.floor((hh - 110) / 17) + 1)))), h('span', { class: 'wf-dlg-btns' }, h('i'), h('i'))];
+  else if (t === 'phone') kids = [h('i', { class: 'wf-notch' }), h('i', { class: 'wf-home' })];
+  else if (t === 'desk') kids = [h('i', { class: 'wf-chrome' }, h('i'), h('i'), h('i'), h('i', { class: 'wf-url' }))];
+  [...el.children].forEach(x => { if (!x.classList.contains('wf-ui')) x.remove(); });
+  el.prepend(...kids);
+}
+/* ---- several pieces at once: wfSel holds their ids while two or more are chosen (one alone is simply the piece with focus) ---- */
+const wfSel = new Set();
+const wfList = () => (cur ? pg().stickies : []).filter(x => x && x.k === 'w');
+const wfPicked = () => wfList().filter(x => wfSel.has(x.id));
+const wfElOf = x => stickiesEl.querySelector('.wf[data-id="' + x.id + '"]');
+const wfBox = list => { const x0 = Math.min(...list.map(m => m.x)), y0 = Math.min(...list.map(m => m.y)); return { x: x0, y: y0, w: Math.max(...list.map(m => m.x + m.w)) - x0, h: Math.max(...list.map(m => m.y + m.h)) - y0 }; };
+const wfBounds = () => viewMode() === 'flip' ? [vp * pitch(), vp * pitch() + geom().H] : [0, sheet.offsetHeight];
+const wfBar = h('div', { class: 'wf-gbar', role: 'toolbar', 'aria-label': 'Markerade skissdelar', hidden: true });
+const wfGBox = h('div', { class: 'wf-gbox', hidden: true }, ['nw', 'ne', 'sw', 'se'].map(hd => h('span', { class: 'wf-rz', dataset: { h: hd }, title: 'Dra för att ändra storlek på alla markerade delar' })));
+sheet.append(wfGBox, wfBar);
+function wfEdges(b0, hd, dx, dy, min) {   // the box after its corner hd has been dragged by dx, dy; the opposite corner stays where it is
+  let L = b0.x, T = b0.y, R = b0.x + b0.w, B = b0.y + b0.h; const W = sheet.offsetWidth, [top, bot] = wfBounds();
+  if (hd.includes('w')) L = Math.max(0, Math.min(R - min, wfSnap(L + dx))); else R = Math.min(W, Math.max(L + min, wfSnap(R + dx)));
+  if (hd.includes('n')) T = Math.max(top, Math.min(B - min, wfSnap(T + dy))); else B = Math.min(bot, Math.max(T + min, wfSnap(B + dy)));
+  return { x: L, y: T, w: R - L, h: B - T };
+}
+function wfTrack(e, el, onMove, onClick) {   // follows the pointer from a press; onClick when it was let go without moving
+  const sx = e.clientX, sy = e.clientY; let moved = false;
+  const move = ev => { if (!moved && Math.hypot(ev.clientX - sx, ev.clientY - sy) < 4) return; if (!moved) { moved = true; if (el) el.classList.add('drag'); closeMenu(); wfBar.hidden = true; } onMove((ev.clientX - sx) / zoomZ, (ev.clientY - sy) / zoomZ); wfLinks(); };
+  const up = () => { document.removeEventListener('pointermove', move); document.removeEventListener('pointerup', up); document.removeEventListener('pointercancel', up); if (el) el.classList.remove('drag'); wfClearGuides(); if (moved) { layoutLive(); touch(); wfPaint(); } else if (onClick) onClick(); };
+  document.addEventListener('pointermove', move); document.addEventListener('pointerup', up); document.addEventListener('pointercancel', up);
+}
+wfGBox.querySelectorAll('.wf-rz').forEach(hd => hd.addEventListener('pointerdown', e => {   // all chosen pieces grow or shrink together, each keeping its place within the group
+  if (e.button) return; e.preventDefault(); e.stopPropagation();
+  const list = wfPicked(), b0 = wfBox(list), start = list.map(x => [x, x.x, x.y, x.w, x.h]);
+  wfTrack(e, null, (dx, dy) => {
+    const b = wfEdges(b0, hd.dataset.h, dx, dy, 24), kx = b.w / b0.w, ky = b.h / b0.h;
+    for (const [x, x0, y0, w0, h0] of start) { x.x = Math.round(b.x + (x0 - b0.x) * kx); x.y = Math.round(b.y + (y0 - b0.y) * ky); x.w = Math.max(8, Math.round(w0 * kx)); x.h = Math.max(8, Math.round(h0 * ky)); const el = wfElOf(x); if (el) wfDraw(el, x); }
+    wfGBox.style.cssText = 'left:' + b.x + 'px;top:' + b.y + 'px;width:' + b.w + 'px;height:' + b.h + 'px';
+  });
+}));
+/* ---- arrows that hold on to pieces: a line end with c1 / c2 (the id of a piece) sits on the edge of that piece and follows it ---- */
+const wfMid = o => [o.x + o.w / 2, o.y + o.h / 2];
+function wfEdgePoint(o, ref) {   // where a line from the middle of the piece towards ref leaves the piece (a few pixels outside its edge)
+  const [cx, cy] = wfMid(o), dx = ref[0] - cx, dy = ref[1] - cy; if (!dx && !dy) return [Math.round(cx), Math.round(o.y - 4)];
+  const k = Math.min(dx ? (o.w / 2 + 4) / Math.abs(dx) : Infinity, dy ? (o.h / 2 + 4) / Math.abs(dy) : Infinity);
+  return [Math.round(cx + dx * k), Math.round(cy + dy * k)];
+}
+function resolveAnchors(list) {
+  for (const s of list || []) {
+    if (!s || s.k !== 'l' || (!s.c1 && !s.c2)) continue;
+    const find = id => id ? list.find(x => x && x.k === 'w' && x.id === id) || null : null, p1 = s.p ? null : find(s.c1), p2 = find(s.c2);
+    if (s.c1 && !p1) delete s.c1; if (s.c2 && !p2) delete s.c2;   // the piece is gone: the end stays where it was
+    const bent = Number.isFinite(+s.mx) && Number.isFinite(+s.my) && s.mx != null, mid = [+s.mx, +s.my];
+    const r1 = bent ? mid : p2 ? wfMid(p2) : [s.x2, s.y2], r2 = bent ? mid : p1 ? wfMid(p1) : [s.x1, s.y1];
+    if (p1) [s.x1, s.y1] = wfEdgePoint(p1, r1); if (p2) [s.x2, s.y2] = wfEdgePoint(p2, r2);
+  }
+}
+function wfLinks() {   // after pieces have moved: the arrows that hold on to them follow
+  const list = cur ? pg().stickies : []; if (!list.some(x => x && x.k === 'l' && (x.c1 || x.c2))) return;
+  resolveAnchors(list); resolveBranches(list);
+  stickiesEl.querySelectorAll('.ln').forEach(e => { if (e._draw) e._draw(); });
+}
+function wfHit(p) {   // the piece a line end is dropped on: the topmost ordinary piece under the point, else a frame whose edge is near
+  const list = wfList();
+  for (let i = list.length - 1; i >= 0; i--) { const o = list[i]; if (!wfFrame(o) && p[0] >= o.x - 6 && p[0] <= o.x + o.w + 6 && p[1] >= o.y - 6 && p[1] <= o.y + o.h + 6) return o; }
+  for (let i = list.length - 1; i >= 0; i--) { const o = list[i]; if (!wfFrame(o)) continue; const inX = p[0] >= o.x - 10 && p[0] <= o.x + o.w + 10, inY = p[1] >= o.y - 10 && p[1] <= o.y + o.h + 10; if (inX && inY && (Math.min(Math.abs(p[0] - o.x), Math.abs(p[0] - o.x - o.w)) <= 10 || Math.min(Math.abs(p[1] - o.y), Math.abs(p[1] - o.y - o.h)) <= 10)) return o; }
+  return null;
+}
+function wfHot(o) { stickiesEl.querySelectorAll('.wf.hot').forEach(e => e.classList.remove('hot')); const e = o && wfElOf(o); if (e) e.classList.add('hot'); }
+function wfArrowFrom(o) {   // a new arrow that starts on the piece; its tip is then dragged to another piece
+  if (freeCount() >= 30) { toast('Det får plats högst 30 lappar, textrutor, bilder, tabeller och pilar på en sida.'); return; }
+  const W = sheet.offsetWidth, right = o.x + o.w + 136 <= W - 8, x2 = right ? o.x + o.w + 128 : Math.max(8, o.x - 128);
+  const s = { id: uid('s'), k: 'l', c1: o.id, x1: o.x + o.w, y1: Math.round(o.y + o.h / 2), x2, y2: Math.round(o.y + o.h / 2), a: 1, bw: 2.5, bc: 'ink' };
+  pg().stickies.push(s); wfSel.clear(); renderStickies(); layoutLive(); touch();
+  const el = stickiesEl.querySelector('.ln[data-id="' + s.id + '"]'); if (el) el.focus({ preventScroll: true });
+  toast('Dra pilens spets till en annan del, så fäster den där.');
+}
+function wfCopyTo(anchor, list) {   // the same pieces at the same place on another page of the note
+  toggleMenu(anchor, m => {
+    const send = j => {
+      closeMenu(); commitPage();
+      let target = cur.pages[j];
+      if (!target) { if (cur.pages.length >= 40) { toast('En anteckning kan ha högst 40 egna sidor.'); return; } target = { id: uid('p'), title: '', html: '', stickies: [], marks: [] }; cur.pages.push(target); j = cur.pages.length - 1; }
+      if (target.stickies.filter(x => x && x.k === 'w').length + list.length > WF_MAX) { toast('Det får plats högst ' + WF_MAX + ' skissdelar på en sida.'); return; }
+      const P = pitch(), k0 = Math.floor(wfBox(list).y / P), copies = list.map(x => Object.assign({}, x, { id: uid('s'), y: x.y - k0 * P }));
+      target.stickies = [...copies.filter(wfFrame), ...target.stickies, ...copies.filter(x => !wfFrame(x))];   // frames behind, the rest on top
+      renderDeck(); touch(); flushSave();
+      toast((list.length === 1 ? 'Kopierad' : list.length + ' delar kopierade') + ' till sida ' + (j + 1) + '.', { label: 'Gå dit', fn: () => { if (cur && cur.pages[j]) { if (viewMode() === 'scroll') goTo(j, 0); else activate(j, 0); } } });
+    };
+    m.append(h('div', { class: 'menu-h', text: 'Kopiera till' }));
+    cur.pages.forEach((p, j) => { if (j !== pi) m.append(h('button', { class: 'menu-btn', type: 'button', dataset: { pg: j }, onclick: () => send(j) }, h('span', { class: 'nm', text: 'Sida ' + (j + 1) + ((p.title || '').trim() ? ' · ' + p.title.trim().slice(0, 30) : '') }))); });
+    m.append(h('button', { class: 'menu-btn', type: 'button', dataset: { pg: 'new' }, onclick: () => send(-1) }, I('plus', 17), h('span', { class: 'nm', text: 'Ny sida' })));
+  });
+}
+wfBar.addEventListener('mousedown', e => e.preventDefault());
+function wfPaint() {
+  const many = wfSel.size > 1;
+  stickiesEl.classList.toggle('multi', many);
+  stickiesEl.querySelectorAll('.wf').forEach(e => e.classList.toggle('sel', many && wfSel.has(e.dataset.id)));
+  wfBar.hidden = wfGBox.hidden = !many; if (!many) return;
+  const list = wfPicked(), b = wfBox(list), tb = (label, title, fn) => h('button', { type: 'button', title, 'aria-label': title, onclick: fn }, label);
+  wfBar.replaceChildren(h('span', { text: list.length + ' delar' }), tb('Kopiera', 'Kopiera de markerade delarna', () => wfCopy(list)), h('button', { type: 'button', 'aria-haspopup': 'true', title: 'Kopiera de markerade delarna till en annan sida', onclick: e => wfCopyTo(e.currentTarget, list) }, 'Till sida'),
+    h('button', { type: 'button', 'aria-haspopup': 'true', title: 'Ställ de markerade delarna i linje eller fördela dem jämnt', onclick: e => toggleMenu(e.currentTarget, m => {
+      const it = (label, mode, off) => { const bt = h('button', { class: 'menu-btn', type: 'button', onclick: () => { closeMenu(); wfAlign(mode); } }, h('span', { class: 'nm', text: label })); if (off) bt.disabled = true; return bt; };
+      m.append(h('div', { class: 'menu-h', text: 'Ställ i linje' }), h('div', { class: 'menu-grid' }, it('Vänsterkant', 'l'), it('Överkant', 't'), it('Mitten (vågrätt)', 'c'), it('Mitten (lodrätt)', 'm'), it('Högerkant', 'r'), it('Underkant', 'b')),
+        h('div', { class: 'menu-h', text: 'Fördela jämnt' }), h('div', { class: 'menu-grid' }, it('Vågrätt', 'dx', list.length < 3), it('Lodrätt', 'dy', list.length < 3)));
+    }) }, 'Justera'),
+    tb(I('x', 13), 'Ta bort de markerade delarna', () => wfRemove(list)));
+  wfBar.style.left = Math.max(4, b.x) + 'px'; wfBar.style.top = (b.y + b.h + 14) + 'px';
+  wfGBox.style.cssText = 'left:' + b.x + 'px;top:' + b.y + 'px;width:' + b.w + 'px;height:' + b.h + 'px';
+}
+function wfSetSel(ids) {
+  wfSel.clear(); for (const id of ids) wfSel.add(id);
+  for (const x of wfList()) if (x.lock) wfSel.delete(x.id);   // a locked piece is never part of a group
+  const list = wfPicked(), ae = document.activeElement;
+  if (list.length === 1) wfSel.clear();
+  if (list.length && !(list.length > 1 && ae && ae.dataset && wfSel.has(ae.dataset.id) && stickiesEl.contains(ae))) { const e = wfElOf(list[0]); if (e) e.focus({ preventScroll: true }); }   // one of the chosen pieces holds the focus, so that the keys work on them
+  wfPaint();
+}
+function wfAfterRender() { const have = new Set(wfList().map(x => x.id)); for (const id of [...wfSel]) if (!have.has(id)) wfSel.delete(id); if (wfSel.size < 2) wfSel.clear(); wfPaint(); }
+function wfRedraw(list) { for (const m of list) { const e = wfElOf(m); if (e) { e.style.left = m.x + 'px'; e.style.top = m.y + 'px'; } } wfLinks(); }
+function wfRemove(list) {   // one piece or many; Ångra puts them back where they lay
+  if (!list.length) return;
+  const page = pg(), before = page.stickies.slice();
+  page.stickies = page.stickies.filter(x => !list.includes(x)); wfSel.clear(); renderStickies(); touch(); flushSave();
+  toast(list.length === 1 ? WF[wfType(list[0])][0] + ' togs bort.' : list.length + ' skissdelar togs bort.', { label: 'Ångra', fn: () => {
+    if (!cur || !cur.pages.includes(page)) return;
+    const kept = new Set(page.stickies); page.stickies = [...before.filter(x => kept.has(x) || list.includes(x)), ...page.stickies.filter(x => !before.includes(x))];
+    if (pg() === page) renderStickies();
+    renderDeck(); touch(); flushSave();
+  } });
+}
+function wfCopy(list) {
+  if (!list.length) return;
+  if (wfList().length + list.length > WF_MAX) { toast('Det får plats högst ' + WF_MAX + ' skissdelar på en sida.'); return; }
+  const all = pg().stickies, copies = list.map(m => Object.assign({}, m, { id: uid('s'), x: m.x + 16, y: m.y + 16 }));
+  all.splice(Math.max(...list.map(m => all.indexOf(m))) + 1, 0, ...copies);
+  renderStickies(); wfSetSel(copies.map(c => c.id)); layoutLive(); touch();
+}
+function wfAlign(mode) {
+  const list = wfPicked(); if (list.length < 2) return;
+  const b = wfBox(list);
+  if (mode === 'dx' || mode === 'dy') {   // equal gaps between the pieces, the outermost two stay where they are
+    const ax = mode === 'dx' ? ['x', 'w'] : ['y', 'h'], sorted = list.slice().sort((p, q) => p[ax[0]] - q[ax[0]]), room = b[ax[1]] - sorted.reduce((a, m) => a + m[ax[1]], 0), gap = room / (sorted.length - 1);
+    let at = b[ax[0]]; for (const m of sorted) { m[ax[0]] = Math.round(at); at += m[ax[1]] + gap; }
+  } else for (const m of list) {
+    if (mode === 'l') m.x = b.x; else if (mode === 'r') m.x = b.x + b.w - m.w; else if (mode === 'c') m.x = Math.round(b.x + (b.w - m.w) / 2);
+    else if (mode === 't') m.y = b.y; else if (mode === 'b') m.y = b.y + b.h - m.h; else if (mode === 'm') m.y = Math.round(b.y + (b.h - m.h) / 2);
+  }
+  wfRedraw(list); wfPaint(); touch();
+}
+let wfGuides = [];
+function wfClearGuides() { wfGuides.forEach(g => g.remove()); wfGuides = []; }
+function wfMove(start, lead, dx, dy) {   // start: [[piece, x0, y0]]; the grabbed piece snaps to the grid, then the group snaps to the edges and middles of the other pieces
+  let ddx = wfSnap(lead[1] + dx) - lead[1], ddy = wfSnap(lead[2] + dy) - lead[2];
+  const movers = start.map(a => a[0]), others = wfList().filter(o => !movers.includes(o));
+  const x0 = Math.min(...start.map(a => a[1])), y0 = Math.min(...start.map(a => a[2])), bw = Math.max(...start.map(a => a[1] + a[0].w)) - x0, bh = Math.max(...start.map(a => a[2] + a[0].h)) - y0;
+  const near = (mine, theirs) => { let best = null; for (const [v, o] of theirs) for (const m of mine) { const d = v - m; if (Math.abs(d) <= 5 && (!best || Math.abs(d) < Math.abs(best[0]))) best = [d, v, o]; } return best; };
+  const hx = near([x0 + ddx, x0 + ddx + bw / 2, x0 + ddx + bw], others.flatMap(o => [[o.x, o], [o.x + o.w / 2, o], [o.x + o.w, o]]));
+  const hy = near([y0 + ddy, y0 + ddy + bh / 2, y0 + ddy + bh], others.flatMap(o => [[o.y, o], [o.y + o.h / 2, o], [o.y + o.h, o]]));
+  if (hx) ddx += hx[0]; if (hy) ddy += hy[0];
+  const W = sheet.offsetWidth, [top, bot] = wfBounds();
+  ddx = Math.max(-x0, Math.min(W - bw - x0, ddx)); ddy = Math.max(top - y0, Math.min(bot - bh - y0, ddy));
+  for (const [m, mx, my] of start) { m.x = mx + ddx; m.y = my + ddy; }
+  wfRedraw(movers); wfClearGuides();
+  const thick = Math.max(1, 1 / zoomZ), bx = x0 + ddx, by = y0 + ddy;
+  if (hx && Math.abs(bx + [0, bw / 2, bw].reduce((a, v) => Math.abs(bx + v - hx[1]) < Math.abs(bx + a - hx[1]) ? v : a, 0) - hx[1]) < .6) { const o = hx[2], g = h('i', { class: 'wf-guide' }), a = Math.min(by, o.y) - 12, z = Math.max(by + bh, o.y + o.h) + 12; g.style.cssText = 'left:' + hx[1] + 'px;top:' + a + 'px;width:' + thick + 'px;height:' + (z - a) + 'px'; sheet.append(g); wfGuides.push(g); }
+  if (hy && Math.abs(by + [0, bh / 2, bh].reduce((a, v) => Math.abs(by + v - hy[1]) < Math.abs(by + a - hy[1]) ? v : a, 0) - hy[1]) < .6) { const o = hy[2], g = h('i', { class: 'wf-guide' }), a = Math.min(bx, o.x) - 12, z = Math.max(bx + bw, o.x + o.w) + 12; g.style.cssText = 'top:' + hy[1] + 'px;left:' + a + 'px;height:' + thick + 'px;width:' + (z - a) + 'px'; sheet.append(g); wfGuides.push(g); }
+}
+document.addEventListener('pointerdown', e => { if (wfSel.size && e.target.closest && !e.target.closest('.wf, .wf-gbar, .wf-gbox, .menu, .wf-catch')) { wfSel.clear(); wfPaint(); } }, true);
+function wireEl(s) {
+  const el = h('div', { class: 'wf', tabindex: '0', dataset: { id: s.id, k: 'w' }, 'aria-label': WF[wfType(s)][0] + ' i skissen. Dra för att flytta' });
+  const inGroup = () => wfSel.size > 1 && wfSel.has(s.id), mine = () => inGroup() ? wfPicked() : [s];
+  const inside = () => { const out = []; for (const o of wfList()) { if (o === s || wfFrame(o)) continue; const cx = o.x + o.w / 2, cy = o.y + o.h / 2; if (cx > s.x && cx < s.x + s.w && cy > s.y && cy < s.y + s.h) out.push(o); } return out; };   // what a frame holds
+  const again = () => { renderStickies(); const e = wfElOf(s); if (e) e.focus({ preventScroll: true }); touch(); };
+  const fit = () => { const W = sheet.offsetWidth, [top, bot] = wfBounds(); s.w = Math.max(16, Math.min(W, s.w)); s.h = Math.max(16, Math.min(bot - top, s.h)); s.x = Math.max(0, Math.min(W - s.w, s.x)); s.y = Math.max(top, Math.min(bot - s.h, s.y)); };
+  const draw = () => wfDraw(el, s);
+  let editing = false;
+  const editText = () => {   // a small field on top of the piece; several words with commas between them for tabs and the bottom menu
+    if (!wfHasText(s) || editing) return;
+    editing = true;
+    const box = h('span', { class: 'wf-ui wf-edit', contenteditable: 'true', role: 'textbox', 'aria-label': 'Text på ' + WF[wfType(s)][0].toLowerCase() }); box.textContent = wfText(s);
+    el.append(box); box.focus();
+    try { const r = document.createRange(); r.selectNodeContents(box); const sl = getSelection(); sl.removeAllRanges(); sl.addRange(r); } catch (e) {}
+    const done = keep => { if (!editing) return; editing = false; if (keep) s.text = box.textContent.replace(/\s+/g, ' ').trim().slice(0, 80); box.remove(); draw(); touch(); };
+    box.addEventListener('blur', () => done(true));
+    box.addEventListener('pointerdown', e => e.stopPropagation());
+    box.addEventListener('keydown', e => { e.stopPropagation(); if (e.key === 'Enter') { e.preventDefault(); done(true); el.focus({ preventScroll: true }); } else if (e.key === 'Escape') { e.preventDefault(); done(false); el.focus({ preventScroll: true }); } });
+    box.addEventListener('paste', e => { e.preventDefault(); document.execCommand('insertText', false, (e.clipboardData.getData('text/plain') || '').replace(/\s+/g, ' ')); });
+  };
+  const order = front => { const list = pg().stickies, i = list.indexOf(s); if (i < 0) return; list.splice(i, 1); if (front) list.push(s); else list.unshift(s); again(); };
+  const tb = (label, title, fn) => h('button', { type: 'button', title, 'aria-label': title, onclick: fn }, label);
+  const lock = on => { if (on) s.lock = 1; else delete s.lock; wfSel.clear(); again(); };
+  const more = e => toggleMenu(e.currentTarget, mm => {
+    const it = (icon, label, fn) => h('button', { class: 'menu-btn', type: 'button', onclick: () => { closeMenu(); fn(); } }, icon ? I(icon, 17) : null, h('span', { class: 'nm', text: label }));
+    mm.append(h('button', { class: 'menu-btn', type: 'button', onclick: ev => { ev.stopPropagation(); wfCopyTo(e.currentTarget, [s]); } }, h('span', { class: 'nm', text: 'Kopiera till en annan sida' })),
+      wfFrame(s) ? it(null, 'Markera ramen med innehåll', () => wfSetSel([s, ...inside()].map(x => x.id))) : null,
+      it(null, 'Lägg överst', () => order(true)), it(null, 'Lägg underst', () => order(false)), it(null, 'Lås, så att den ligger still', () => lock(true)));
+  });
+  const tools = s.lock ? h('span', { class: 'wf-ui wf-tools' }, tb('Lås upp', 'Delen är låst. Lås upp för att flytta eller ändra den', () => lock(false)))
+    : h('span', { class: 'wf-ui wf-tools' },
+      wfHasText(s) ? tb('Text', s.t === 'tabs' || s.t === 'bottom' ? 'Ändra texterna, med komma emellan (eller dubbelklicka)' : 'Ändra texten (eller dubbelklicka)', editText) : null,
+      ['rect', 'round', 'circle'].includes(wfType(s)) ? tb('Fyll', 'Byt mellan ingen, ljus och mörk fyllning', () => { s.f = ((s.f | 0) + 1) % 3; draw(); touch(); }) : null,
+      tb('Kopiera', 'Gör en kopia bredvid', () => wfCopy([s])), tb('Pil', 'En pil härifrån. Dra sedan spetsen till en annan del', () => wfArrowFrom(s)),
+      h('button', { type: 'button', 'aria-haspopup': 'true', title: 'Kopiera till en annan sida, lägg överst eller underst, lås', onclick: more }, 'Mer'), tb(I('x', 13), 'Ta bort', () => wfRemove([s])));
+  tools.addEventListener('mousedown', e => e.preventDefault());
+  tools.addEventListener('pointerdown', e => e.stopPropagation());
+  if (wfFrame(s)) for (const e of ['t', 'b', 'l', 'r']) el.append(h('span', { class: 'wf-ui wf-edge', dataset: { e } }));
+  if (!s.lock) for (const hd of ['nw', 'ne', 'sw', 'se']) {   // a handle in every corner; the opposite corner stays put
+    const rz = h('span', { class: 'wf-ui wf-rz', dataset: { h: hd }, title: 'Dra för att ändra storlek' });
+    rz.addEventListener('pointerdown', e => {
+      if (e.button) return; e.preventDefault(); e.stopPropagation(); el.focus({ preventScroll: true });
+      const b0 = { x: s.x, y: s.y, w: s.w, h: s.h };
+      wfTrack(e, el, (dx, dy) => { Object.assign(s, wfEdges(b0, hd, dx, dy, 16)); draw(); });
+    });
+    el.append(rz);
+  }
+  el.append(tools); draw();
+  el.addEventListener('pointerdown', e => {
+    if (e.button || editing) return;
+    if (e.target.closest('.wf-tools')) return;
+    e.preventDefault();
+    if (s.lock) { if (wfSel.size) { wfSel.clear(); wfPaint(); } el.focus({ preventScroll: true }); return; }   // a locked piece can be pointed at (to unlock it), nothing more
+    if (e.shiftKey || e.ctrlKey || e.metaKey) {   // add to, or take out of, what is chosen
+      const ids = new Set(wfSel), ae = document.activeElement;
+      if (!ids.size && ae && ae !== el && ae.classList && ae.classList.contains('wf') && stickiesEl.contains(ae)) ids.add(ae.dataset.id);
+      if (ids.has(s.id)) ids.delete(s.id); else ids.add(s.id);
+      if (ids.size > 1) el.focus({ preventScroll: true });
+      wfSetSel(ids); return;
+    }
+    const group = inGroup();
+    if (!group && wfSel.size) { wfSel.clear(); wfPaint(); }
+    el.focus({ preventScroll: true });
+    const movers = group ? wfPicked() : wfFrame(s) && !e.altKey ? [s, ...inside()] : [s], start = movers.map(x => [x, x.x, x.y]), lead = start.find(a => a[0] === s);
+    wfTrack(e, el, (dx, dy) => wfMove(start, lead, dx, dy), () => { if (group) { wfSel.clear(); wfPaint(); el.focus({ preventScroll: true }); } });   // a plain click on one of several chooses just that one
+  });
+  el.addEventListener('dblclick', e => { if (!e.target.closest('.wf-tools') && !inGroup() && !s.lock) editText(); });
+  el.addEventListener('keydown', e => {
+    if (editing || e.target !== el || s.lock) return;
+    const step = e.shiftKey ? 1 : WF_GRID, by = { ArrowLeft: [-step, 0], ArrowRight: [step, 0], ArrowUp: [0, -step], ArrowDown: [0, step] }[e.key];
+    if (by) {
+      e.preventDefault(); e.stopPropagation();
+      const list = mine(), b = wfBox(list), W = sheet.offsetWidth, [top, bot] = wfBounds();
+      const dx = Math.max(-b.x, Math.min(W - b.w - b.x, by[0])), dy = Math.max(top - b.y, Math.min(bot - b.h - b.y, by[1]));
+      for (const m of list) { m.x += dx; m.y += dy; } wfRedraw(list); wfPaint(); touch();
+    }
+    else if (e.key === 'Delete' || e.key === 'Backspace') { e.preventDefault(); e.stopPropagation(); wfRemove(mine()); }
+    else if (e.key === 'Escape' && wfSel.size) { e.stopPropagation(); wfSel.clear(); wfPaint(); }
+    else if (e.key === 'Enter' && wfHasText(s) && !inGroup()) { e.preventDefault(); editText(); }
+    else if ((e.ctrlKey || e.metaKey) && (e.key === 'd' || e.key === 'D')) { e.preventDefault(); wfCopy(mine()); }
+    else if ((e.ctrlKey || e.metaKey) && (e.key === 'a' || e.key === 'A')) { e.preventDefault(); wfSetSel(wfList().map(x => x.id)); }
+  });
+  return el;
+}
+function wfMarquee() {   // drag a box over the page: every piece it touches is chosen
+  if (!cur) return;
+  if (viewMode() === 'flow') { toast('Skisser ritas i sidvyn.', { label: 'Byt till sidvy', fn: () => setPhonePage(true) }); return; }
+  if (!wfList().length) { toast('Det finns inga skissdelar på sidan än.'); return; }
+  const k = viewMode() === 'scroll' ? (viewed[0] === pi ? viewed[1] : 0) : vp, top = k * pitch(), H = geom().H;
+  const box = h('i'), catcher = h('div', { class: 'wf-catch' }, box); catcher.style.top = top + 'px'; catcher.style.height = H + 'px';
+  sheet.querySelectorAll('.wf-catch').forEach(x => x.remove()); sheet.append(catcher);
+  toast('Dra en ruta runt delarna du vill markera.');
+  const esc = e => { if (e.key === 'Escape') stop(); }, stop = () => { catcher.remove(); document.removeEventListener('keydown', esc, true); };
+  document.addEventListener('keydown', esc, true);
+  catcher.addEventListener('pointerdown', e => {
+    if (e.button) return; e.preventDefault(); try { catcher.setPointerCapture(e.pointerId); } catch (err) {}
+    const sr = sheet.getBoundingClientRect(), at = ev => [(ev.clientX - sr.left) / zoomZ, (ev.clientY - sr.top) / zoomZ], a = at(e); let b = a;
+    const rect = () => ({ x: Math.min(a[0], b[0]), y: Math.min(a[1], b[1]), w: Math.abs(b[0] - a[0]), h: Math.abs(b[1] - a[1]) });
+    const move = ev => { b = at(ev); const r = rect(); box.style.cssText = 'display:block;left:' + r.x + 'px;top:' + (r.y - top) + 'px;width:' + r.w + 'px;height:' + r.h + 'px'; };
+    const up = ev => {
+      catcher.removeEventListener('pointermove', move); catcher.removeEventListener('pointerup', up); catcher.removeEventListener('pointercancel', up);
+      const r = rect(); stop(); if (ev.type !== 'pointerup') return;
+      const hit = wfList().filter(o => !o.lock && o.x < r.x + r.w && o.x + o.w > r.x && o.y < r.y + r.h && o.y + o.h > r.y);
+      if (!hit.length) toast('Inga skissdelar i rutan.'); else wfSetSel(hit.map(o => o.id));
+    };
+    catcher.addEventListener('pointermove', move); catcher.addEventListener('pointerup', up); catcher.addEventListener('pointercancel', up);
+  });
+}
+function addWire(type) {
+  if (!cur || !WF[type]) return;
+  if (viewMode() === 'flow') { toast('Skisser ritas i sidvyn.', { label: 'Byt till sidvy', fn: () => setPhonePage(true) }); return; }
+  const list = pg().stickies, n = wfList().length;
+  if (n >= WF_MAX) { toast('Det får plats högst ' + WF_MAX + ' skissdelar på en sida.'); return; }
+  const b = sheet.getBoundingClientRect(), v = scrollEl.getBoundingClientRect(), W = sheet.offsetWidth;
+  const k = viewMode() === 'scroll' ? (viewed[0] === pi ? viewed[1] : 0) : vp, top = k * pitch(), bot = top + geom().H;
+  const vl = Math.max(0, (Math.max(v.left, b.left) - b.left) / zoomZ), vr = Math.min(W, (Math.min(v.right, b.right) - b.left) / zoomZ), vt = Math.max(top, (v.top - b.top) / zoomZ), vb = Math.min(bot, (v.bottom - b.top) / zoomZ);
+  const frame = type === 'phone' || type === 'desk', w = Math.min(WF[type][1], W - 16), hh = Math.min(WF[type][2], bot - top - 16), off = frame ? 0 : (n % 6) * 16;
+  const s = { id: uid('s'), k: 'w', t: type, w, h: hh, x: wfSnap(Math.max(8, Math.min(W - w - 8, (vl + vr) / 2 - w / 2 + off))), y: wfSnap(Math.max(top + 8, Math.min(bot - hh - 8, (vt + vb) / 2 - hh / 2 + off))) };
+  if (type === 'mark') s.text = String(wfList().filter(x => x.t === 'mark').length + 1);   // the next number on the page
+  if (frame) list.unshift(s); else list.push(s);   // a frame goes behind what is already there
+  wfSel.clear(); renderStickies(); layoutLive(); touch();
+  const el = wfElOf(s); if (el) el.focus({ preventScroll: true });
+}
+$('#wireTool').addEventListener('click', () => { if (cur) toggleMenu($('#wireTool'), m => {
+  for (const [title, types] of WF_GROUPS) m.append(h('div', { class: 'menu-h', text: title }), h('div', { class: 'menu-grid' }, types.map(t => h('button', { class: 'menu-btn', type: 'button', dataset: { wf: t }, onclick: () => { closeMenu(); addWire(t); } }, h('span', { class: 'nm', text: WF[t][0] })))));
+  m.append(h('div', { class: 'menu-sep' }), h('button', { class: 'menu-btn', type: 'button', id: 'wfPick', onclick: () => { closeMenu(); wfMarquee(); } }, I('move', 17), h('span', { class: 'nm' }, 'Markera flera', h('small', { text: 'Dra en ruta, eller Skift-klicka på delarna' }))));
+}); });
 $('#lineTool').addEventListener('click', () => { if (cur) toggleMenu($('#lineTool'), m => {   // choose what to put on the sheet
   const item = (icon, label, kind) => h('button', { class: 'menu-btn', type: 'button', onclick: () => { closeMenu(); addLine(kind); } }, I(icon, 17), h('span', { class: 'nm', text: label }));
   m.append(item('arrow', 'Pil', 1), item('line', 'Linje utan pil', 0), item('arrow2', 'Dubbelpil', 2));
@@ -3912,7 +4414,7 @@ $('#tblGrip').addEventListener('pointerdown', e => {   // dragging the handle li
 /* ================= tables that lie free on the sheet ================= */
 function tableStickyEl(s) {
   const el = h('div', { class: 'st', dataset: { id: s.id, k: 'g' } });
-  const place = () => { el.style.setProperty('--st-w', clampN(s.w, 80, 1100, 400) + 'px'); el.style.left = 'calc((100% - var(--st-w)) * ' + clampN(s.x, 0, 1, 0) + ')'; el.style.top = clampN(s.y, 0, 1e6, 0) + 'px'; };
+  const place = () => { el.style.setProperty('--st-w', clampN(s.w, 80, 2300, 400) + 'px'); el.style.left = 'calc((100% - var(--st-w)) * ' + clampN(s.x, 0, 1, 0) + ')'; el.style.top = clampN(s.y, 0, 1e6, 0) + 'px'; };
   place(); el._place = place;
   const box = h('div', { class: 'st-table prose' }); box.style.fontSize = (cur.size || 17) + 'px';
   box.innerHTML = sanitize(s.html || '');
@@ -3980,7 +4482,7 @@ function tableStickyEl(s) {
 }
 function liftTable(t) {   // a table in the text becomes a free table at the same spot
   if (!cur || !t || !bodyEl.contains(t) || viewMode() === 'flow') return null;
-  if (pg().stickies.length >= 30) { toast('Det får plats högst 30 lappar, textrutor, bilder och tabeller på en sida.'); return null; }
+  if (freeCount() >= 30) { toast('Det får plats högst 30 lappar, textrutor, bilder och tabeller på en sida.'); return null; }
   const r = t.getBoundingClientRect(), b = sheet.getBoundingClientRect(), w = Math.max(80, Math.round(r.width / zoomZ) + 18);
   const c = t.cloneNode(true); c.style.width = ''; c.removeAttribute('data-pg'); c.style.marginTop = '';
   const s = { id: uid('s'), k: 'g', html: sanitize(c.outerHTML), w, x: 0, y: Math.max(0, Math.round((r.top - b.top) / zoomZ) - 9) };
@@ -3994,7 +4496,7 @@ function tableToText(s) {   // back into the text, at the height where the table
   page.stickies = page.stickies.filter(x => x !== s);
   const tmp = document.createElement('template'); tmp.innerHTML = sanitize(s.html || ''); const t = tmp.content.querySelector('table');
   if (t) {
-    const full = bodyEl.clientWidth, w = Math.min(full, Math.max(60, clampN(s.w, 80, 1100, 400) - 18)); if (w < full - 2) t.style.width = (Math.round(w / full * 1000) / 10) + '%';
+    const full = bodyEl.clientWidth, w = Math.min(full, Math.max(60, clampN(s.w, 80, 2300, 400) - 18)); if (w < full - 2) t.style.width = (Math.round(w / full * 1000) / 10) + '%';
     const base = bodyEl.offsetTop, before = [...bodyEl.children].find(u => base + u.offsetTop + u.offsetHeight / 2 > s.y);
     if (before) before.before(t); else bodyEl.append(t);
     if (!t.nextElementSibling) { const p = document.createElement('p'); p.append(document.createElement('br')); t.after(p); }
@@ -4199,7 +4701,7 @@ async function buildPdf() {
   if (!secs.length) secs = [[cur.pages[0], 0]];
   const { W, H } = geom(), P = H + PG.G, land = cur.orient === 'l';
   const stage = $('#pdfStage'); stage.style.width = W + 'px';
-  const pdf = new jsPDF({ orientation: land ? 'landscape' : 'portrait', unit: 'pt', format: 'a4', compress: true });
+  const pdf = new jsPDF({ orientation: land ? 'landscape' : 'portrait', unit: 'pt', format: noteFmt(cur), compress: true });
   const PW = pdf.internal.pageSize.getWidth(), PH = pdf.internal.pageSize.getHeight();
   let first = true;
   try {
@@ -4212,7 +4714,7 @@ async function buildPdf() {
       const lay = layoutSheet(w.sheet, w.body, p, j, false);
       const lines = pdfTextLines(w.sheet);
       const scale = Math.max(1, Math.min(2, 15000 / lay.total));
-      const canvas = await window.html2canvas(w.sheet, { scale, backgroundColor: '#ffffff', useCORS: true, logging: false, width: W, height: lay.total, windowWidth: 1500 });
+      const canvas = await window.html2canvas(w.sheet, { scale, backgroundColor: '#ffffff', useCORS: true, logging: false, width: W, height: lay.total, windowWidth: Math.max(1500, W + 120) });
       if (!canvas.width || !canvas.height) throw new Error('tom bild');
       const sc = canvas.width / W, hpx = Math.round(H * sc);
       for (let k = 0; k < lay.n; k++) {
@@ -4228,8 +4730,9 @@ async function buildPdf() {
   return pdf.output('blob');
 }
 function textPdf(jsPDF, pages) {
-  const land = cur.orient === 'l', wrapW = land ? 720 : 475, maxY = land ? 530 : 780;
-  const pdf = new jsPDF({ orientation: land ? 'landscape' : 'portrait', unit: 'pt', format: 'a4' }); let y = 70;
+  const land = cur.orient === 'l';
+  const pdf = new jsPDF({ orientation: land ? 'landscape' : 'portrait', unit: 'pt', format: noteFmt(cur) }); let y = 70;
+  const wrapW = pdf.internal.pageSize.getWidth() - 120, maxY = pdf.internal.pageSize.getHeight() - 62;
   const line = (txt, size, style, gap) => {
     pdf.setFont('helvetica', style); pdf.setFontSize(size);
     for (const l of pdf.splitTextToSize(txt, wrapW)) { if (y > maxY) { pdf.addPage(); y = 70; } pdf.text(l, 60, y); y += gap; }
