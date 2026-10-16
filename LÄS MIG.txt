@@ -1,0 +1,44 @@
+ANTECK SOM FRISTÅENDE APP
+=========================
+
+Mappen "anteck-app" är hela appen. Den ska ligga på en webbadress (https)
+för att kunna installeras på dator och telefon. Därefter fungerar den utan
+nät och utan Claude.
+
+1. LÄGG UPP MAPPEN
+   Enklast: gå till app.netlify.com/drop och dra dit mappen "anteck-app".
+   Logga in / skapa konto och gör sidan till din ("claim"), annars ligger
+   den inte kvar. Du får en adress som du kan byta namn på i inställningarna.
+   Andra ställen som fungerar lika bra: GitHub Pages, Cloudflare Pages.
+
+   GITHUB PAGES I STÄLLET:
+   a) Skapa ett nytt publikt förråd (repository) på github.com.
+   b) Välj "uploading an existing file" och dra dit INNEHÅLLET i mappen
+      "anteck-app" (index.html ska ligga överst, inte i en undermapp).
+      Spara med "Commit changes".
+   c) Settings > Pages > Source: "Deploy from a branch", välj grenen
+      "main" och mappen "/ (root)". Spara.
+   d) Efter någon minut finns appen på
+      https://DITT-NAMN.github.io/FÖRRÅDETS-NAMN/
+
+2. INSTALLERA
+   Dator (Chrome/Edge): öppna adressen, tryck på installera-symbolen i
+                        adressfältet (eller menyn > Installera Anteck).
+   iPhone (Safari):     Dela > Lägg till på hemskärmen.
+   Android (Chrome):    menyn > Installera app / Lägg till på startskärmen.
+
+3. FLYTTA MED DINA ANTECKNINGAR
+   I Anteck hos Claude: tryck "Spara kopia". Du får en fil.
+   I den nya appen: tryck "Läs in" och välj filen.
+   På iPhone: installera på hemskärmen FÖRST och läs in kopian i appen.
+   Appen på hemskärmen har egen lagring, skild från Safari.
+
+BRA ATT VETA
+ - Anteckningarna sparas på enheten där du skriver dem. Dator och telefon
+   synkas inte. Flytta mellan dem med "Spara kopia" och "Läs in".
+ - Ta en kopia då och då. Rensar du webbläsarens data eller tar bort appen
+   försvinner anteckningarna på den enheten.
+ - Någon annan som öppnar adressen ser bara en tom app. Dina anteckningar
+   skickas aldrig någonstans.
+ - Ny version: lägg upp den nya mappen på samma sida. Appen uppdaterar sig
+   nästa gång den öppnas med nät. Anteckningarna påverkas inte.
